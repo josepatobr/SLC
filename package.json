@@ -1,9 +1,11 @@
 {
-  "devDependencies": {
-    "tailwindcss": "^4.1.14"
+  "scripts": {
+    "tailwind": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css",
+    "dev": "npm run tailwind -- --watch",
+    "build": "npm run tailwind"
   },
-  "dependencies": {
-    "@tailwindcss/cli": "^4.1.14",
-    "@tailwindcss/vite": "^4.1.14"
+  "devDependencies": {
+    "tailwindcss": "^4.1.14",
+    "@tailwindcss/cli": "^4.1.14"
   }
 }
