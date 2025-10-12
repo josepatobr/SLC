@@ -7,16 +7,17 @@
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-
-
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
-        <label for="opcao" class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
-            <select id="opcao" name="opcao" class=" mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
-            <option value="codigo-email">Entrar com código via email</option>
-            <option value="codigo-sms">Entrar com código via sms (isso só serve se você adicionou o telefone no cadastro)</option>
-            <option value="senha-email">Entrar com a senha e o email</option>
-        </select>
+        
+        <label for="opcao" class="block text-sm font-medium text-gray-700">Escolhe umas das formas de entradas:</label>
+            <select id="opcao" name="opcao" class="mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
+                <div class="text-center flex items-center justify-center">
+                    <option  value="codigo-email">Entrar com código via email</option>
+                    <option  value="codigo-sms">Entrar com código via sms (isso só serve se você adicionou o telefone no cadastro)</option>
+                    <option  value="senha-email">Entrar com a senha e o email</option>
+                </div>
+            </select>
 
         <div id="email-code-section" class="mt-4 hidden">
             <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
