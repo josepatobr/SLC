@@ -1,7 +1,7 @@
 {% load static %}
 <head>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta name="google-signin-client_id" content="{{GOOGLE_CLIENT_ID}}.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
     <title>Login</title>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
@@ -44,7 +44,7 @@
 
         <div id="sms-code-section" class="mt-4 hidden">
             <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
-            <input type="tel" id="telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="tel" id="code-telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
             <button id="enviar-sms" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Enviar código por SMS
@@ -59,7 +59,7 @@
 
         <div id="email-code-section" class="mt-4 hidden">
             <label for="email" class="block text-sm font-medium text-gray-700">email:</label>
-            <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="email" id="code-email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
             <button id="enviar-email" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Enviar código por email
@@ -80,7 +80,7 @@
 
         <!-- GOOGLE -->
         <div id="g_id_onload"
-            data-client_id="{{GOOGLE_CLIENT_ID}}.apps.googleusercontent.com"
+            data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
             data-context="signin"
             data-ux_mode="popup"
             data-callback="handleCredentialResponse"
@@ -103,7 +103,7 @@
         const jwt = response.credential;
         console.log("Token jwt recebido", jwt);
 
-        fetch('http://localhost:8000/login',{ 
+        fetch('http://localhost:8000/login-google',{ 
         method: 'POST',
         headers: {
             'Content-Type':'application/json'
@@ -191,7 +191,7 @@
     
     
     enviarSMSBtn.addEventListener("click", () => {
-    const telefone = document.getElementById("telefone").value;
+    const telefone = document.getElementById("code-telefone").value;
 
     if (!telefone) {
         alert("Digite seu telefone primeiro.");
@@ -217,7 +217,7 @@
     const campoCodigoEmail = document.getElementById("campo-codigo-email");
 
     enviarEMAILBtn.addEventListener("click", () => {
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("code-email").value;
 
     if (!email) {
         alert("Digite seu email primeiro.");

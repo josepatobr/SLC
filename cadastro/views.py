@@ -8,6 +8,4 @@ def cadastro(request):
     return render(request, 'cadastro.html')
 
 def login(request):
-    valor = os.getenv("GOOGLE_CLIENT_ID")
-    
-    return render(request, 'login.html', {valor:'valor'})
+    return render(request, 'login.html')

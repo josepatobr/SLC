@@ -112,7 +112,7 @@ def login_google(payload: GoogleTokenSchema):
             google_requests.Request(),
             os.getenv("GOOGLE_CLIENT_ID")        
             )
-
+        print("Token recebido:", payload.token)
         email = idinfo["email"]
         nome = idinfo.get("name", "")
 
@@ -133,7 +133,8 @@ def login_google(payload: GoogleTokenSchema):
 
     except Exception as e:
         return {"erro": "Token inválido ou expirado"}
-  
+    
+
 @router.post("/login-email-codigo")
 def login_email_codigo(payload: LoginEmailCodigo):
     try:
