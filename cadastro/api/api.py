@@ -12,7 +12,7 @@ import os
 load_dotenv()
 router = Router()
 
-@router.post("/cadastro", response=CadastroOut)
+@router.post("cadastro/", response=CadastroOut)
 def cadastro(request, payload:CadastroSchemas):
     if request.user and request.user.is_authenticated:
         return {"erro": "Usuário já está logado"}
@@ -39,7 +39,7 @@ def cadastro(request, payload:CadastroSchemas):
             refresh=str(refresh)
         )
     
-@router.post("/login-email")
+@router.post("login-email/")
 def login_email(payload: LoginEmailSenha):
     try:
         user = CustomUser.objects.get(email=payload.email)
@@ -56,7 +56,7 @@ def login_email(payload: LoginEmailSenha):
         "usuario": user.username
     }
 
-@router.post("/login-sms")
+@router.post("login-sms/")
 def login_sms(payload: LoginSMS):
     try:
         codigo_obj = CodigoSMS.objects.filter(
@@ -81,7 +81,7 @@ def login_sms(payload: LoginSMS):
         "usuario": user.email
     } 
 
-@router.post("/enviar-codigo-sms")
+@router.post("enviar-codigo-sms/")
 def enviar_codigo(payload: CodigoSMSRequest):
     numero = payload.telefone
     codigo = str(random.randint(100000, 999999))
@@ -93,7 +93,7 @@ def enviar_codigo(payload: CodigoSMSRequest):
     codigo_obj.salvar_codigo()
     return {"status": "Código enviado"}
 
-@router.post("/enviar-codigo-email")
+@router.post("enviar-codigo-email/")
 def enviar_codigo(payload: CodigoEMAILRequest):
     email = payload.email
     codigo = str(random.randint(100000, 999999))
@@ -104,7 +104,7 @@ def enviar_codigo(payload: CodigoEMAILRequest):
 
     return {"status": "Código enviado"}
 
-@router.get("/login-google")
+@router.get("login-google/")
 def login_google(payload: GoogleTokenSchema):
     try:
         idinfo = id_token.verify_oauth2_token(
@@ -135,7 +135,7 @@ def login_google(payload: GoogleTokenSchema):
         return {"erro": "Token inválido ou expirado"}
     
 
-@router.post("/login-email-codigo")
+@router.post("login-email-codigo/")
 def login_email_codigo(payload: LoginEmailCodigo):
     try:
         codigo_obj = CodigoEmail.objects.filter(
