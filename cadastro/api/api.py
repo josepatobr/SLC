@@ -104,7 +104,7 @@ def enviar_codigo(payload: CodigoEMAILRequest):
 
     return {"status": "Código enviado"}
 
-@router.post("/login-google")
+@router.get("/login-google")
 def login_google(payload: GoogleTokenSchema):
     try:
         idinfo = id_token.verify_oauth2_token(
