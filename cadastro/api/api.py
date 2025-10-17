@@ -104,8 +104,8 @@ def enviar_codigo(payload: CodigoEMAILRequest):
 
     return {"status": "Código enviado"}
 
-@router.get("login-google/")
-def login_google(payload: GoogleTokenSchema):
+@router.post("login-google/")
+def login_google(payload:GoogleTokenSchema):
     try:
         idinfo = id_token.verify_oauth2_token(
             payload.token,
@@ -115,7 +115,7 @@ def login_google(payload: GoogleTokenSchema):
         print("Token recebido:", payload.token)
         email = idinfo["email"]
         nome = idinfo.get("name", "")
-
+        
         user, created = CustomUser.objects.get_or_create(email=email)
         if created:
             user.username = email.split("@")[0]

@@ -84,8 +84,7 @@
         <div id="g_id_onload"
             data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
             data-context="signin"
-            data-ux_mode="redirect"
-            data-login_uri="http://localhost:8000/api/auth/login-google/"
+            data-callback="handleCredentialResponse"
             data-itp_support="true">
         </div>
 
@@ -102,14 +101,34 @@
 
 <script>
 
-    window.onload = function () {
-    google.accounts.id.initialize({
+    google.accounts.id({
       client_id: '325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com',
-      callback: 'YOUR_CALLBACK_HANDLER'
+      callback: handleCredentialResponse
     });
-    google.accounts.id.prompt();
+    
+    
+    function handleCredentialResponse(response) {
+    const responsePayload = decodeJwtResponse(response.credential);
+
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
     }
 
+    function decodeJwtResponse(token) {
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+    }
+
+    
     const select = document.getElementById("opcao");
     const emailCodeSection = document.getElementById("email-code-section");
     const smsCodeSection = document.getElementById("sms-code-section");
