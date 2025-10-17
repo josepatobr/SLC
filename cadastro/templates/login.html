@@ -100,13 +100,7 @@
 </body>
 
 <script>
-
-    google.accounts.id({
-      client_id: '325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com',
-      callback: handleCredentialResponse
-    });
-    
-    
+   
     function handleCredentialResponse(response) {
     const responsePayload = decodeJwtResponse(response.credential);
 
