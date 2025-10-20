@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'home'
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -154,3 +153,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+#GOOGLE
+SECURE_CROSS_ORIGIN_OPENER_POLICY="same-origin-allow-popups"

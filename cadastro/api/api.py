@@ -106,6 +106,7 @@ def enviar_codigo(payload: CodigoEMAILRequest):
 
 @router.post("login-google/")
 def login_google(payload:GoogleTokenSchema):
+    print(payload)
     try:
         idinfo = id_token.verify_oauth2_token(
             payload.token,
@@ -113,6 +114,8 @@ def login_google(payload:GoogleTokenSchema):
             os.getenv("GOOGLE_CLIENT_ID")        
             )
         print("Token recebido:", payload.token)
+        print(payload)
+
         email = idinfo["email"]
         nome = idinfo.get("name", "")
         

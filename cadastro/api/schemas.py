@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from ninja import Schema
 
 class CadastroSchemas(BaseModel):
     username: str =Field(min_length=3)
@@ -42,5 +43,5 @@ class CodigoSMSRequest(BaseModel):
 class CodigoEMAILRequest(BaseModel):
     email: EmailStr
 
-class GoogleTokenSchema(BaseModel):
+class GoogleTokenSchema(Schema):
     token: str

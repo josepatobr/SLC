@@ -57,32 +57,44 @@
         <br>
         <!-- GOOGLE -->
         <div id="g_id_onload"
-          data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
-          data-context="signin"
-          data-ux_mode="redirect"
-          data-login_uri="http://localhost:8000/api/auth/login-google/"
-          data-itp_support="true">
+            data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
+            data-context="signin"
+            data-callback="handleCredentialResponse"
+            data-itp_support="true">
         </div>
 
         <div class="g_id_signin"
-          data-type="standard"
-          data-shape="rectangular"
-          data-theme="outline"
-          data-text="signin_with"
-          data-size="large"
-          data-logo_alignment="left">
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-logo_alignment="left">
         </div>
       </div>
     </body>
 
 <script>
-    window.onload = function () {
-    google.accounts.id.initialize({
-      client_id: '325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com',
-      callback: 'YOUR_CALLBACK_HANDLER'
-    });
-    google.accounts.id.prompt();
+    function handleCredentialResponse(response){
+        const jwt = response.credential;
+        console.log("Token jwt recebido", jwt);
+
+        fetch('http://localhost:8000/api/auth/login-google/',{ 
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify({ token:jwt})
+        })
+        .then(res=>res.json())
+        .then(data=> {
+            console.log("Resposta do backend:", data);
+        })
+        .catch(err => {
+        console.error("Erro ao enviar token:", err);
+      });
     }
+    
 
 
   const username = document.getElementById("username");
