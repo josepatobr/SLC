@@ -8,6 +8,7 @@ from google.auth.transport import requests as google_requests
 from cadastro.tasks import enviar_sms_async, enviar_email_async
 from dotenv import load_dotenv
 import os
+from django.http import HttpResponseRedirect
 
 load_dotenv()
 router = Router()
@@ -15,7 +16,7 @@ router = Router()
 @router.post("cadastro/", response=CadastroOut)
 def cadastro(request, payload:CadastroSchemas):
     if request.user and request.user.is_authenticated:
-        return {"erro": "Usuário já está logado"}
+        return HttpResponseRedirect('home/')
     
     if CustomUser.objects.filter(telefone=payload.telefone).exists():
         return {"erro": "Telefone já cadastrado"}
@@ -40,7 +41,10 @@ def cadastro(request, payload:CadastroSchemas):
         )
     
 @router.post("login-email/")
-def login_email(payload: LoginEmailSenha):
+def login_email(request, payload: LoginEmailSenha):
+    if request.user and request.user.is_authenticated:
+        return HttpResponseRedirect('home/')
+    
     try:
         user = CustomUser.objects.get(email=payload.email)
     except CustomUser.DoesNotExist:
@@ -57,7 +61,10 @@ def login_email(payload: LoginEmailSenha):
     }
 
 @router.post("login-sms/")
-def login_sms(payload: LoginSMS):
+def login_sms(request, payload: LoginSMS):
+    if request.user and request.user.is_authenticated:
+        return HttpResponseRedirect('home/')
+    
     try:
         codigo_obj = CodigoSMS.objects.filter(
             telefone=payload.telefone,
@@ -82,7 +89,7 @@ def login_sms(payload: LoginSMS):
     } 
 
 @router.post("enviar-codigo-sms/")
-def enviar_codigo(payload: CodigoSMSRequest):
+def enviar_codigo(request, payload: CodigoSMSRequest):
     numero = payload.telefone
     codigo = str(random.randint(100000, 999999))
 
@@ -94,7 +101,7 @@ def enviar_codigo(payload: CodigoSMSRequest):
     return {"status": "Código enviado"}
 
 @router.post("enviar-codigo-email/")
-def enviar_codigo(payload: CodigoEMAILRequest):
+def enviar_codigo(request, payload: CodigoEMAILRequest):
     email = payload.email
     codigo = str(random.randint(100000, 999999))
 
@@ -105,27 +112,33 @@ def enviar_codigo(payload: CodigoEMAILRequest):
     return {"status": "Código enviado"}
 
 @router.post("login-google/")
-def login_google(payload:GoogleTokenSchema):
-    print(payload)
+def login_google(request, payload:GoogleTokenSchema):
+    if request.user and request.user.is_authenticated:
+        return HttpResponseRedirect('home/')
+     
     try:
         idinfo = id_token.verify_oauth2_token(
             payload.token,
             google_requests.Request(),
             os.getenv("GOOGLE_CLIENT_ID")        
             )
-        print("Token recebido:", payload.token)
-        print(payload)
-
-        email = idinfo["email"]
-        nome = idinfo.get("name", "")
         
+        username = idinfo.get("name", "")
+        email = idinfo.get("email")
+        telefone = ("")
+
         user, created = CustomUser.objects.get_or_create(email=email)
+
         if created:
-            user.username = email.split("@")[0]
+            user.username = username
+            user.email = email
+            user.telefone = telefone
             user.save()
+            return HttpResponseRedirect('home/')
+            
 
         if idinfo['aud'] != os.getenv("GOOGLE_CLIENT_ID"):
-            raise ValueError("Token com audience inválido")
+            return {"error": "Token com audience inválido"}
 
         refresh = RefreshToken.for_user(user)
         return {
@@ -135,11 +148,14 @@ def login_google(payload:GoogleTokenSchema):
         }
 
     except Exception as e:
-        return {"erro": "Token inválido ou expirado"}
-    
+        return {"error": str(e)}
 
+    
 @router.post("login-email-codigo/")
-def login_email_codigo(payload: LoginEmailCodigo):
+def login_email_codigo(request, payload: LoginEmailCodigo):
+    if request.user and request.user.is_authenticated:
+        return HttpResponseRedirect('home/')
+    
     try:
         codigo_obj = CodigoEmail.objects.filter(
             email=payload.email,
@@ -154,7 +170,8 @@ def login_email_codigo(payload: LoginEmailCodigo):
     try:
         user = CustomUser.objects.get(email=payload.email)
     except CustomUser.DoesNotExist:
-        return {"erro": "Usuário não encontrado"}
+        return {"error": "Usuário não encontrado"}
+
 
     refresh = RefreshToken.for_user(user)
     return {

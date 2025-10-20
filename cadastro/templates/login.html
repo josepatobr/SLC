@@ -1,103 +1,106 @@
 {% load static %}
-<head>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
-    
-    <title>Login</title>
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
-</head>
-
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+<html>
+    <head>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
         
-        <label for="opcao" class="block text-sm font-medium text-gray-700">Escolhe umas das formas de entradas:</label>
-            <select id="opcao" name="opcao" class="mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
-                <div class="text-center flex items-center justify-center">
-                    <option  value="codigo-email">Entrar com código via email</option>
-                    <option  value="codigo-sms">Entrar com código via sms (isso só serve se você adicionou o telefone no cadastro)</option>
-                    <option  value="senha-email">Entrar com a senha e o email</option>
+        <title>Login</title>
+        <link href="{% static 'css/output.css' %}" rel="stylesheet">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    </head>
+
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+            
+            <label for="opcao" class="block text-sm font-medium text-gray-700">Escolhe umas das formas de entradas:</label>
+                <select id="opcao" name="opcao" class="mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
+                    <div class="text-center flex items-center justify-center">
+                        <option  value="codigo-email">Entrar com código via email</option>
+                        <option  value="codigo-sms">Entrar com código via sms (isso só serve se você adicionou o telefone no cadastro)</option>
+                        <option  value="senha-email">Entrar com a senha e o email</option>
+                    </div>
+                </select>
+
+            <div id="email-code-section" class="mt-4 hidden">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+                <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div id="sms-code-section" class="mt-4 hidden">
+                <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
+                <input type="tel" id="telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div id="email-password-section" class="mt-4 hidden">
+                <label for="login-email" class="block text-sm font-medium text-gray-700">Email:</label>
+                <input type="email" id="login-email" name="login-email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                <label for="senha" class="block text-sm font-medium text-gray-700 mt-4">Senha:</label>
+                <input type="password" id="senha" name="senha" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <br>
+            <button id="enviar" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
+                Entrar
+            </button>
+
+
+            <div id="sms-code-section" class="mt-4 hidden">
+                <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
+                <input type="tel" id="code-telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                <button id="enviar-sms" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Enviar código por SMS
+                </button>
+
+                <div id="campo-codigo-sms" class="mt-4 hidden">
+                    <label for="codigo-sms" class="block text-sm font-medium text-gray-700">Código recebido:</label>
+                    <input type="text" id="codigo-sms" name="codigo-sms" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-            </select>
-
-        <div id="email-code-section" class="mt-4 hidden">
-            <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
-            <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <div id="sms-code-section" class="mt-4 hidden">
-            <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
-            <input type="tel" id="telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <div id="email-password-section" class="mt-4 hidden">
-            <label for="login-email" class="block text-sm font-medium text-gray-700">Email:</label>
-            <input type="email" id="login-email" name="login-email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            <label for="senha" class="block text-sm font-medium text-gray-700 mt-4">Senha:</label>
-            <input type="password" id="senha" name="senha" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <br>
-        <button id="enviar" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
-            Entrar
-        </button>
+            </div>
 
 
-        <div id="sms-code-section" class="mt-4 hidden">
-            <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
-            <input type="tel" id="code-telefone" name="telefone" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="email-code-section" class="mt-4 hidden">
+                <label for="email" class="block text-sm font-medium text-gray-700">email:</label>
+                <input type="email" id="code-email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-            <button id="enviar-sms" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                Enviar código por SMS
-            </button>
+                <button id="enviar-email" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Enviar código por email
+                </button>
 
-            <div id="campo-codigo-sms" class="mt-4 hidden">
-                <label for="codigo-sms" class="block text-sm font-medium text-gray-700">Código recebido:</label>
-                <input type="text" id="codigo-sms" name="codigo-sms" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div id="campo-codigo-email" class="mt-4 hidden">
+                    <label for="codigo-email" class="block text-sm font-medium text-gray-700">Código recebido:</label>
+                    <input type="text" id="codigo-email" name="codigo-email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <br> 
+            <br>
+            <a href="/cadastro" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 text-center justify-center flex">
+                cadastro
+            </a>
+
+            <br>
+
+
+            <!-- GOOGLE -->
+            <div id="g_id_onload"
+                data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
+                data-context="signin"
+                data-callback="handleCredentialResponse"
+                data-itp_support="true">
+            </div>
+
+            <div class="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left">
             </div>
         </div>
-
-
-        <div id="email-code-section" class="mt-4 hidden">
-            <label for="email" class="block text-sm font-medium text-gray-700">email:</label>
-            <input type="email" id="code-email" name="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            <button id="enviar-email" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                Enviar código por email
-            </button>
-
-            <div id="campo-codigo-email" class="mt-4 hidden">
-                <label for="codigo-email" class="block text-sm font-medium text-gray-700">Código recebido:</label>
-                <input type="text" id="codigo-email" name="codigo-email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-        </div>
-        <br> 
-        <br>
-        <a href="/cadastro" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 text-center justify-center flex">
-            cadastro
-        </a>
-
-        <br>
-
-
-        <!-- GOOGLE -->
-        <div id="g_id_onload"
-            data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
-            data-context="signin"
-            data-callback="handleCredentialResponse"
-            data-itp_support="true">
-        </div>
-
-        <div class="g_id_signin"
-            data-type="standard"
-            data-shape="rectangular"
-            data-theme="outline"
-            data-text="signin_with"
-            data-size="large"
-            data-logo_alignment="left">
-        </div>
-    </div>
-</body>
+    </body>
+</html>
 
 <script>
     function handleCredentialResponse(response){
