@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+
 def enviar_email(destinatario, codigo):
     assunto = "Seu código de login"
     mensagem = f"Olá!\n\nSeu código de acesso é: {codigo}\n\nEle expira em 10 minutos."
@@ -15,7 +16,7 @@ def enviar_email(destinatario, codigo):
             message=mensagem,
             from_email=remetente,
             recipient_list=[destinatario],
-            fail_silently=False
+            fail_silently=False,
         )
         return "Email enviado com sucesso"
     except Exception as e:

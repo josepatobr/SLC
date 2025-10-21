@@ -1,4 +1,4 @@
-from cadastro.api.schemas import *
+from cadastro.api.schemas import CadastroOut, CadastroSchemas, LoginEmailSenha, LoginSMS, CodigoSMSRequest, CodigoEMAILRequest, GoogleTokenSchema, LoginEmailCodigo
 from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import Router
 import random
@@ -16,21 +16,19 @@ router = Router()
 @router.post("cadastro/", response=CadastroOut)
 def cadastro(request, payload:CadastroSchemas):
     if request.user and request.user.is_authenticated:
-        return redirect('home/')
-    
+        return redirect("home/")
+
     if CustomUser.objects.filter(telefone=payload.telefone).exists():
         return {"erro": "Telefone já cadastrado"}
-    
+
     if CustomUser.objects.filter(email=payload.email).exists():
         return {"erro": "email ja cadastrado"}
-    
+
     else:
         user = CustomUser.objects.create_user(
-            username=payload.username,
-            email=payload.email,
-            password=payload.password
+            username=payload.username, email=payload.email, password=payload.password
         )
-        user.telefone=payload.telefone
+        user.telefone = payload.telefone
         user.save()
         refresh = RefreshToken.for_user(user)
         return CadastroOut(
@@ -38,14 +36,14 @@ def cadastro(request, payload:CadastroSchemas):
             username=user.username,
             email=user.email,
             access=str(refresh.access_token),
-            refresh=str(refresh)
+            refresh=str(refresh),
         )
-    
+
 @router.post("login-email/")
-def login_email(request, payload: LoginEmailSenha):
+def login_email(request, payload:LoginEmailSenha):
     if request.user and request.user.is_authenticated:
-        return redirect('home/')
-    
+        return redirect("home/")
+
     try:
         user = CustomUser.objects.get(email=payload.email)
     except CustomUser.DoesNotExist:
@@ -58,19 +56,18 @@ def login_email(request, payload: LoginEmailSenha):
     return {
         "access": str(refresh.access_token),
         "refresh": str(refresh),
-        "usuario": user.username
+        "usuario": user.username,
     }
 
 @router.post("login-sms/")
-def login_sms(request, payload: LoginSMS):
+def login_sms(request, payload:LoginSMS):
     if request.user and request.user.is_authenticated:
-        return redirect('home/')
-    
+        return redirect("home/")
+
     try:
         codigo_obj = CodigoSMS.objects.filter(
-            telefone=payload.telefone,
-            codigo=payload.codigo
-        ).latest('criado_em')
+            telefone=payload.telefone, codigo=payload.codigo
+        ).latest("criado_em")
     except CodigoSMS.DoesNotExist:
         return {"erro": "Código inválido ou não encontrado"}
 
@@ -86,27 +83,27 @@ def login_sms(request, payload: LoginSMS):
     return {
         "access": str(refresh.access_token),
         "refresh": str(refresh),
-        "usuario": user.email
-    } 
+        "usuario": user.email,
+    }
 
 @router.post("enviar-codigo-sms/")
-def enviar_codigo(request, payload: CodigoSMSRequest):
+def enviar_codigo(request, payload:CodigoSMSRequest):
     numero = payload.telefone
     codigo = str(random.randint(100000, 999999))
 
     enviar_sms_async.delay(numero, codigo)
 
-    codigo_obj= CodigoSMS.objects.create(telefone=numero, codigo=codigo, expires_at=5)
+    codigo_obj = CodigoSMS.objects.create(telefone=numero, codigo=codigo, expires_at=5)
     codigo_obj = CodigoSMS(telefone=numero, codigo=codigo)
     codigo_obj.salvar_codigo()
     return {"status": "Código enviado"}
 
 @router.post("enviar-codigo-email/")
-def enviar_codigo(request, payload: CodigoEMAILRequest):
+def enviar_codigo_email(request, payload:CodigoEMAILRequest):
     email = payload.email
     codigo = str(random.randint(100000, 999999))
 
-    enviar_email_async.delay(email, codigo)     
+    enviar_email_async.delay(email, codigo)
     codigo_obj = CodigoEmail.objects.create(email=email, codigo=codigo)
     codigo_obj.salvar_codigo_email()
 
@@ -118,20 +115,18 @@ def login_google(request, payload:GoogleTokenSchema):
 
     if request.user and request.user.is_authenticated:
         return redirect("home/")
-     
+
     if not token:
         return {"error": "Token não fornecido"}
 
     try:
         idinfo = id_token.verify_oauth2_token(
-            payload.token,
-            google_requests.Request(),
-            os.getenv("GOOGLE_CLIENT_ID")        
-            )
-        
+            payload.token, google_requests.Request(), os.getenv("GOOGLE_CLIENT_ID")
+        )
+
         username = idinfo.get("name", "")
         email = idinfo.get("email")
-        telefone = ("")
+        telefone = ""
 
         user, created = CustomUser.objects.get_or_create(email=email)
 
@@ -141,31 +136,30 @@ def login_google(request, payload:GoogleTokenSchema):
             user.telefone = telefone
             user.save()
             return redirect("home/")
-            
 
-        if idinfo['aud'] != os.getenv("GOOGLE_CLIENT_ID"):
+        if idinfo["aud"] != os.getenv("GOOGLE_CLIENT_ID"):
             return {"error": "Token com audience inválido"}
 
         refresh = RefreshToken.for_user(user)
         return {
             "access": str(refresh.access_token),
             "refresh": str(refresh),
-            "usuario": email
+            "usuario": email,
         }
 
     except Exception as e:
         return {"error": str(e)}
- 
+
+
 @router.post("login-email-codigo/")
-def login_email_codigo(request, payload: LoginEmailCodigo):
+def login_email_codigo(request, payload:LoginEmailCodigo):
     if request.user and request.user.is_authenticated:
-        return redirect('home/')
-    
+        return redirect("home/")
+
     try:
         codigo_obj = CodigoEmail.objects.filter(
-            email=payload.email,
-            codigo=payload.codigo
-        ).latest('criado_em')
+            email=payload.email, codigo=payload.codigo
+        ).latest("criado_em")
     except CodigoEmail.DoesNotExist:
         return {"erro": "Código inválido ou não encontrado"}
 
@@ -177,10 +171,9 @@ def login_email_codigo(request, payload: LoginEmailCodigo):
     except CustomUser.DoesNotExist:
         return {"error": "Usuário não encontrado"}
 
-
     refresh = RefreshToken.for_user(user)
     return {
         "access": str(refresh.access_token),
         "refresh": str(refresh),
-        "usuario": user.username
+        "usuario": user.username,
     }

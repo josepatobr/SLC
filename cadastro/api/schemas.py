@@ -3,9 +3,9 @@ from typing import Optional
 from ninja import Schema
 
 class CadastroSchemas(BaseModel):
-    username: str =Field(min_length=3)
-    email:EmailStr=Field(min_length=6, unique=True)
-    password:str =Field(min_length=6)
+    username: str = Field(min_length=3)
+    email: EmailStr = Field(min_length=6, unique=True)
+    password: str = Field(min_length=6)
     telefone: Optional[str]
 
 class CadastroOut(BaseModel):
@@ -45,4 +45,3 @@ class CodigoEMAILRequest(BaseModel):
 
 class GoogleTokenSchema(Schema):
     token: str
-    

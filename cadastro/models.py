@@ -23,7 +23,7 @@ class CodigoSMS(models.Model):
 
     def __str__(self):
         return f"{self.telefone} - {self.codigo}"
-    
+
 
 class CodigoEmail(models.Model):
     email = models.EmailField()
@@ -32,6 +32,6 @@ class CodigoEmail(models.Model):
 
     def esta_valido(self):
         return timezone.now() - self.criado_em < timedelta(minutes=10)
-    
+
     def salvar_codigo_email(self):
         self.save()
