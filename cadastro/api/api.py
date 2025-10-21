@@ -8,7 +8,7 @@ from google.auth.transport import requests as google_requests
 from cadastro.tasks import enviar_sms_async, enviar_email_async
 from dotenv import load_dotenv
 import os
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 
 load_dotenv()
 router = Router()
@@ -16,7 +16,7 @@ router = Router()
 @router.post("cadastro/", response=CadastroOut)
 def cadastro(request, payload:CadastroSchemas):
     if request.user and request.user.is_authenticated:
-        return HttpResponseRedirect('home/')
+        return redirect('home/')
     
     if CustomUser.objects.filter(telefone=payload.telefone).exists():
         return {"erro": "Telefone já cadastrado"}
@@ -43,7 +43,7 @@ def cadastro(request, payload:CadastroSchemas):
 @router.post("login-email/")
 def login_email(request, payload: LoginEmailSenha):
     if request.user and request.user.is_authenticated:
-        return HttpResponseRedirect('home/')
+        return redirect('home/')
     
     try:
         user = CustomUser.objects.get(email=payload.email)
@@ -63,7 +63,7 @@ def login_email(request, payload: LoginEmailSenha):
 @router.post("login-sms/")
 def login_sms(request, payload: LoginSMS):
     if request.user and request.user.is_authenticated:
-        return HttpResponseRedirect('home/')
+        return redirect('home/')
     
     try:
         codigo_obj = CodigoSMS.objects.filter(
@@ -114,7 +114,7 @@ def enviar_codigo(request, payload: CodigoEMAILRequest):
 @router.post("login-google/")
 def login_google(request, payload:GoogleTokenSchema):
     if request.user and request.user.is_authenticated:
-        return HttpResponseRedirect('home/')
+        return redirect('home/')
      
     try:
         idinfo = id_token.verify_oauth2_token(
@@ -134,7 +134,7 @@ def login_google(request, payload:GoogleTokenSchema):
             user.email = email
             user.telefone = telefone
             user.save()
-            return HttpResponseRedirect('home/')
+            return redirect('home/')
             
 
         if idinfo['aud'] != os.getenv("GOOGLE_CLIENT_ID"):
@@ -149,12 +149,11 @@ def login_google(request, payload:GoogleTokenSchema):
 
     except Exception as e:
         return {"error": str(e)}
-
-    
+ 
 @router.post("login-email-codigo/")
 def login_email_codigo(request, payload: LoginEmailCodigo):
     if request.user and request.user.is_authenticated:
-        return HttpResponseRedirect('home/')
+        return redirect('home/')
     
     try:
         codigo_obj = CodigoEmail.objects.filter(
