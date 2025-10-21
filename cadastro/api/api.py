@@ -20,9 +20,10 @@ def cadastro(request, payload:CadastroSchemas):
     
     if CustomUser.objects.filter(telefone=payload.telefone).exists():
         return {"erro": "Telefone já cadastrado"}
-
-    if CustomUser.objects.filter(username=payload.username).exists():
-        return{"erro":"usuario ja cadastrado"}
+    
+    if CustomUser.objects.filter(email=payload.email).exists():
+        return {"erro": "email ja cadastrado"}
+    
     else:
         user = CustomUser.objects.create_user(
             username=payload.username,
@@ -116,11 +117,10 @@ def login_google(request, payload:GoogleTokenSchema):
     token = payload.token
 
     if request.user and request.user.is_authenticated:
-        return redirect('home/')
+        return redirect("home/")
      
     if not token:
-        return {'error': 'Token não fornecido'}
-
+        return {"error": "Token não fornecido"}
 
     try:
         idinfo = id_token.verify_oauth2_token(
@@ -140,7 +140,7 @@ def login_google(request, payload:GoogleTokenSchema):
             user.email = email
             user.telefone = telefone
             user.save()
-            return redirect('home/')
+            return redirect("home/")
             
 
         if idinfo['aud'] != os.getenv("GOOGLE_CLIENT_ID"):
