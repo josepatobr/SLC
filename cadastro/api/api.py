@@ -113,9 +113,15 @@ def enviar_codigo(request, payload: CodigoEMAILRequest):
 
 @router.post("login-google/")
 def login_google(request, payload:GoogleTokenSchema):
+    token = payload.token
+
     if request.user and request.user.is_authenticated:
         return redirect('home/')
      
+    if not token:
+        return {'error': 'Token não fornecido'}
+
+
     try:
         idinfo = id_token.verify_oauth2_token(
             payload.token,
