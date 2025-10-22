@@ -1,0 +1,21 @@
+{% load static %}
+
+
+{% block extra_head %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+{% block 'content' %} 
+    <div>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary"></nav>
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+            </div>
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+            </div>
+    </div>
+{% endblock 'content' %}

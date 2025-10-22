@@ -1,4 +1,13 @@
-from cadastro.api.schemas import CadastroOut, CadastroSchemas, LoginEmailSenha, LoginSMS, CodigoSMSRequest, CodigoEMAILRequest, GoogleTokenSchema, LoginEmailCodigo
+from cadastro.api.schemas import (
+    CadastroOut,
+    CadastroSchemas,
+    LoginEmailSenha,
+    LoginSMS,
+    CodigoSMSRequest,
+    CodigoEMAILRequest,
+    GoogleTokenSchema,
+    LoginEmailCodigo,
+)
 from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import Router
 import random
@@ -13,8 +22,9 @@ from django.shortcuts import redirect
 load_dotenv()
 router = Router()
 
+
 @router.post("cadastro/", response=CadastroOut)
-def cadastro(request, payload:CadastroSchemas):
+def cadastro(request, payload: CadastroSchemas):
     if request.user and request.user.is_authenticated:
         return redirect("home/")
 
@@ -39,8 +49,9 @@ def cadastro(request, payload:CadastroSchemas):
             refresh=str(refresh),
         )
 
+
 @router.post("login-email/")
-def login_email(request, payload:LoginEmailSenha):
+def login_email(request, payload: LoginEmailSenha):
     if request.user and request.user.is_authenticated:
         return redirect("home/")
 
@@ -59,8 +70,9 @@ def login_email(request, payload:LoginEmailSenha):
         "usuario": user.username,
     }
 
+
 @router.post("login-sms/")
-def login_sms(request, payload:LoginSMS):
+def login_sms(request, payload: LoginSMS):
     if request.user and request.user.is_authenticated:
         return redirect("home/")
 
@@ -86,8 +98,9 @@ def login_sms(request, payload:LoginSMS):
         "usuario": user.email,
     }
 
+
 @router.post("enviar-codigo-sms/")
-def enviar_codigo(request, payload:CodigoSMSRequest):
+def enviar_codigo(request, payload: CodigoSMSRequest):
     numero = payload.telefone
     codigo = str(random.randint(100000, 999999))
 
@@ -98,8 +111,9 @@ def enviar_codigo(request, payload:CodigoSMSRequest):
     codigo_obj.salvar_codigo()
     return {"status": "Código enviado"}
 
+
 @router.post("enviar-codigo-email/")
-def enviar_codigo_email(request, payload:CodigoEMAILRequest):
+def enviar_codigo_email(request, payload: CodigoEMAILRequest):
     email = payload.email
     codigo = str(random.randint(100000, 999999))
 
@@ -109,8 +123,9 @@ def enviar_codigo_email(request, payload:CodigoEMAILRequest):
 
     return {"status": "Código enviado"}
 
+
 @router.post("login-google/")
-def login_google(request, payload:GoogleTokenSchema):
+def login_google(request, payload: GoogleTokenSchema):
     token = payload.token
 
     if request.user and request.user.is_authenticated:
@@ -152,7 +167,7 @@ def login_google(request, payload:GoogleTokenSchema):
 
 
 @router.post("login-email-codigo/")
-def login_email_codigo(request, payload:LoginEmailCodigo):
+def login_email_codigo(request, payload: LoginEmailCodigo):
     if request.user and request.user.is_authenticated:
         return redirect("home/")
 
