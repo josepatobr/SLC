@@ -44,12 +44,9 @@ class LoginOut(BaseModel):
     refresh: str
 
 
-class CodigoSMSRequest(BaseModel):
-    telefone: str
-
-
-class CodigoEMAILRequest(BaseModel):
-    email: EmailStr
+class CodigoRequest(BaseModel):
+    telefone: Optional[str]
+    email: Optional[EmailStr]
 
 
 class GoogleTokenSchema(Schema):

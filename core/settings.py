@@ -31,10 +31,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "cadastro",
     "ninja",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
     "home",
 ]
 MIDDLEWARE = [
@@ -45,7 +41,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 SITE_ID = 1
@@ -156,3 +151,7 @@ CELERY_TASK_SERIALIZER = "json"
 
 # GOOGLE
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
+# TOKENS
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+SMS_KEY = os.getenv("SMS_KEY")

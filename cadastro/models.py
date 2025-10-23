@@ -8,8 +8,16 @@ class CustomUser(AbstractUser):
     telefone = models.CharField(max_length=20)
 
 
-class CodigoSMS(models.Model):
-    telefone = models.CharField(max_length=20)
+class Codigo_Selecionado(models.Model):
+    telefone = models.CharField(max_length=11)
+    email = models.EmailField(max_length=200)
+
+    def __str__(self):
+        return self.email
+
+
+class Codigo(models.Model):
+    resultado = models.ForeignKey(Codigo_Selecionado, on_delete=models.CASCADE)
     codigo = models.CharField(max_length=6)
     criado_em = models.DateTimeField(auto_now_add=True)
     expira_em = models.DateTimeField()
@@ -22,16 +30,4 @@ class CodigoSMS(models.Model):
         return timezone.now() <= self.expira_em
 
     def __str__(self):
-        return f"{self.telefone} - {self.codigo}"
-
-
-class CodigoEmail(models.Model):
-    email = models.EmailField()
-    codigo = models.CharField(max_length=6)
-    criado_em = models.DateTimeField(auto_now_add=True)
-
-    def esta_valido(self):
-        return timezone.now() - self.criado_em < timedelta(minutes=10)
-
-    def salvar_codigo_email(self):
-        self.save()
+        return f"{self.resultado} - {self.codigo}"

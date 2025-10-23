@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
-import os
+from django.conf import settings
+
 
 load_dotenv()
 
@@ -8,7 +9,7 @@ load_dotenv()
 def enviar_sms(numero, codigo):
     url = "https://api.smsdev.com.br/v1/send"
     params = {
-        "key": os.getenv("SMS_KEY"),
+        "key": settings("SMS_KEY"),
         "type": "text",
         "number": numero,
         "msg": f"Seu código de login é: {codigo}",

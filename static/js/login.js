@@ -46,7 +46,6 @@
     select.addEventListener("change", atualizarSecao);
     window.addEventListener("DOMContentLoaded", atualizarSecao);
 
-
     // sistema de enviar dados
     const enviarBtn = document.getElementById("enviar");
     const popup = document.getElementById("popup-codigo");
@@ -81,7 +80,7 @@
             alert("Digite seu email.");
         return;
         }
-    enviarCodigo("enviar-codigo-email/", { email });
+    enviarCodigo("enviar-codigo/", { email });
 
     } else if (modo === "codigo-sms") {
         const telefone = document.getElementById("telefone").value;
@@ -89,7 +88,7 @@
             alert("Digite seu telefone.");
         return;
         }
-    enviarCodigo("enviar-codigo-sms/", { telefone });
+    enviarCodigo("enviar-codigo/", { telefone });
 
     } else {
         alert("Selecione um modo válido.");

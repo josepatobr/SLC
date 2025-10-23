@@ -3,30 +3,30 @@ from cadastro.api.schemas import (
     CadastroSchemas,
     LoginEmailSenha,
     LoginSMS,
-    CodigoSMSRequest,
-    CodigoEMAILRequest,
+    CodigoRequest,
     GoogleTokenSchema,
     LoginEmailCodigo,
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import Router
 import random
-from cadastro.models import CodigoSMS, CustomUser, CodigoEmail
+from cadastro.models import CustomUser, Codigo
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from cadastro.tasks import enviar_sms_async, enviar_email_async
-from dotenv import load_dotenv
-import os
 from django.shortcuts import redirect
+from django.utils import timezone
+from datetime import timedelta
+from django.conf import settings
 
-load_dotenv()
+
 router = Router()
 
 
 @router.post("cadastro/", response=CadastroOut)
 def cadastro(request, payload: CadastroSchemas):
     if request.user and request.user.is_authenticated:
-        return redirect("home/")
+        return redirect("home")
 
     if CustomUser.objects.filter(telefone=payload.telefone).exists():
         return {"erro": "Telefone já cadastrado"}
@@ -53,7 +53,7 @@ def cadastro(request, payload: CadastroSchemas):
 @router.post("login-email/")
 def login_email(request, payload: LoginEmailSenha):
     if request.user and request.user.is_authenticated:
-        return redirect("home/")
+        return redirect("home")
 
     try:
         user = CustomUser.objects.get(email=payload.email)
@@ -74,13 +74,13 @@ def login_email(request, payload: LoginEmailSenha):
 @router.post("login-sms/")
 def login_sms(request, payload: LoginSMS):
     if request.user and request.user.is_authenticated:
-        return redirect("home/")
+        return redirect("home")
 
     try:
-        codigo_obj = CodigoSMS.objects.filter(
+        codigo_obj = Codigo.objects.filter(
             telefone=payload.telefone, codigo=payload.codigo
         ).latest("criado_em")
-    except CodigoSMS.DoesNotExist:
+    except Codigo.DoesNotExist:
         return {"erro": "Código inválido ou não encontrado"}
 
     if not codigo_obj.esta_valido():
@@ -99,27 +99,31 @@ def login_sms(request, payload: LoginSMS):
     }
 
 
-@router.post("enviar-codigo-sms/")
-def enviar_codigo(request, payload: CodigoSMSRequest):
-    numero = payload.telefone
+@router.post("enviar-codigo/")
+def enviar_codigo(request, payload: CodigoRequest):
     codigo = str(random.randint(100000, 999999))
 
-    enviar_sms_async.delay(numero, codigo)
+    if payload.email:
+        email = payload.email
+        enviar_email_async.delay(email, codigo)
 
-    codigo_obj = CodigoSMS.objects.create(telefone=numero, codigo=codigo, expires_at=5)
-    codigo_obj = CodigoSMS(telefone=numero, codigo=codigo)
-    codigo_obj.salvar_codigo()
-    return {"status": "Código enviado"}
+        codigo_obj = Codigo.objects.create(
+            email=email, codigo=codigo, expira_em=timezone.now() + timedelta(minutes=5)
+        )
+        codigo_obj.save()
 
+    elif payload.telefone:
+        numero = payload.telefone
+        enviar_sms_async.delay(numero, codigo)
 
-@router.post("enviar-codigo-email/")
-def enviar_codigo_email(request, payload: CodigoEMAILRequest):
-    email = payload.email
-    codigo = str(random.randint(100000, 999999))
+        codigo_obj = Codigo.objects.create(
+            telefone=numero,
+            codigo=codigo,
+            expira_em=timezone.now() + timedelta(minutes=5),
+        )
 
-    enviar_email_async.delay(email, codigo)
-    codigo_obj = CodigoEmail.objects.create(email=email, codigo=codigo)
-    codigo_obj.salvar_codigo_email()
+    else:
+        return {"status": "Erro: Nenhum contato fornecido"}
 
     return {"status": "Código enviado"}
 
@@ -129,14 +133,14 @@ def login_google(request, payload: GoogleTokenSchema):
     token = payload.token
 
     if request.user and request.user.is_authenticated:
-        return redirect("home/")
+        return redirect("home")
 
     if not token:
         return {"error": "Token não fornecido"}
 
     try:
         idinfo = id_token.verify_oauth2_token(
-            payload.token, google_requests.Request(), os.getenv("GOOGLE_CLIENT_ID")
+            payload.token, google_requests.Request(), settings("GOOGLE_CLIENT_ID")
         )
 
         username = idinfo.get("name", "")
@@ -150,9 +154,9 @@ def login_google(request, payload: GoogleTokenSchema):
             user.email = email
             user.telefone = telefone
             user.save()
-            return redirect("home/")
+            return redirect("home")
 
-        if idinfo["aud"] != os.getenv("GOOGLE_CLIENT_ID"):
+        if idinfo["aud"] != settings("GOOGLE_CLIENT_ID"):
             return {"error": "Token com audience inválido"}
 
         refresh = RefreshToken.for_user(user)
@@ -169,13 +173,13 @@ def login_google(request, payload: GoogleTokenSchema):
 @router.post("login-email-codigo/")
 def login_email_codigo(request, payload: LoginEmailCodigo):
     if request.user and request.user.is_authenticated:
-        return redirect("home/")
+        return redirect("home")
 
     try:
-        codigo_obj = CodigoEmail.objects.filter(
+        codigo_obj = Codigo.objects.filter(
             email=payload.email, codigo=payload.codigo
         ).latest("criado_em")
-    except CodigoEmail.DoesNotExist:
+    except Codigo.DoesNotExist:
         return {"erro": "Código inválido ou não encontrado"}
 
     if not codigo_obj.esta_valido():
