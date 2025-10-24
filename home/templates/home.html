@@ -1,5 +1,17 @@
+<!-- no topo vai ter o navbar do base.html -->
+
 <body>
     <div>
-        aaaaaaaaaaa
+        <div class="border">
+            <div class="border">Recomendados</div>
+                {% for recommended_movie in recommended_movies %}
+                    <div>
+                        <a href="{% url 'movie' id=recommended_movie.id %}">
+                        <img src="{{ recommended_movie.poster.url }}" alt="{{ recommended_movie.name_movie }}" width="200">
+                        <h3> {{ recommended_movie.name_movie }}</h3>
+                        </a>
+                    </div>
+                {% endfor %}
+        </div>
     </div>
 </body>

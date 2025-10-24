@@ -1,0 +1,28 @@
+<body>
+    <div>
+        <div class="filme-detalhes">
+
+            {% if movie.video %}
+                <video width="640" height="360" controls>
+                    <source src="{{ movie.video.url }}" type="video/mp4">
+                    Seu navegador não suporta vídeo.
+                </video>
+            {% else %}
+                <p><em>Vídeo ainda não disponível.</em></p>
+            {% endif %}
+
+            <h1>{{ movie.name_movie }}</h1>
+            
+            <p><strong>Gêneros:</strong>
+                {% for genero in movie.gender.all %}
+                    {{ genero.gender }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+
+            <p><strong>Descrição:</strong> {{ movie.description }}</p>
+
+            <p><strong>Data de lançamento:</strong> {{ movie.release_date }}</p>
+
+        </div>
+    </div>
+</body>

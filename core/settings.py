@@ -134,6 +134,9 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = "cadastro.CustomUser"
 
+# imagens
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # email
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -155,4 +158,3 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 # TOKENS
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 SMS_KEY = os.getenv("SMS_KEY")
-

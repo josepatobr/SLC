@@ -26,5 +26,9 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
 
+  tailwind:
+    build: .
+    container_name: app_tailwind
+    command: npm run dev
 
       
