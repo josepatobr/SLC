@@ -1,15 +1,15 @@
 from django.db import models
-import unidecode
+from slugify import slugify
 
 
 class Gender(models.Model):
-    gender = models.CharField(max_length=50, null=False, blank=False)
+    gender = slug = models.CharField(max_length=50, unique=True, null=False, blank=False)
 
     def __str__(self):
-        return self.gender
+        return self.slug
 
     def save(self, *args, **kwargs):
-        self.gender = unidecode(self.gender).upper()
+        self.slug = (self.slug).upper()
         super().save(*args, **kwargs)
 
 
