@@ -3,13 +3,14 @@ from slugify import slugify
 
 
 class Gender(models.Model):
-    gender = slug = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    genders = models.CharField(max_length=50, null=False, blank=False)
+    slug = models.CharField(max_length=50, unique=True, null=False, blank=False)
 
-    def __str__(self):
-        return self.slug
+    def _str_(self):
+        return self.genders
 
     def save(self, *args, **kwargs):
-        self.slug = (self.slug).upper()
+        self.slug = slugify(self.genders)
         super().save(*args, **kwargs)
 
 
