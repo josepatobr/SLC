@@ -1,4 +1,4 @@
-from home.models import Movies
+from filmes.models import Movies
 from django.shortcuts import render, get_object_or_404
 
 
