@@ -17,11 +17,14 @@ class Gender(models.Model):
         verbose_name = "Gender"
         verbose_name_plural = "Genders"
 
+
 class Movies(models.Model):
     movie = models.FileField(upload_to="movies", null=True, blank=True)
     name_movie = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=1000, blank=False, null=False)
-    gender = models.ManyToManyField(Gender, help_text="para adicionar mais de 1 genero, voce precisa segurar o ctrl")
+    gender = models.ManyToManyField(
+        Gender, help_text="para adicionar mais de 1 genero, voce precisa segurar o ctrl"
+    )
     poster = models.ImageField(upload_to="posters", blank=False, null=False)
     release_date = models.DateField(blank=True, null=True)
     watch_count = models.PositiveIntegerField(default=0)

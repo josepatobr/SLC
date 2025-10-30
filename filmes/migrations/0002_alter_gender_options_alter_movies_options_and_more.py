@@ -4,23 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('filmes', '0001_initial'),
+        ("filmes", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='gender',
-            options={'verbose_name': 'Gender', 'verbose_name_plural': 'Genders'},
+            name="gender",
+            options={"verbose_name": "Gender", "verbose_name_plural": "Genders"},
         ),
         migrations.AlterModelOptions(
-            name='movies',
-            options={'verbose_name': 'Movie', 'verbose_name_plural': 'Movies'},
+            name="movies",
+            options={"verbose_name": "Movie", "verbose_name_plural": "Movies"},
         ),
         migrations.AlterField(
-            model_name='movies',
-            name='gender',
-            field=models.ManyToManyField(help_text='para adicionar mais de 1 genero, voce precisa segurar o ctrl', to='filmes.gender'),
+            model_name="movies",
+            name="gender",
+            field=models.ManyToManyField(
+                help_text="para adicionar mais de 1 genero, voce precisa segurar o ctrl",
+                to="filmes.gender",
+            ),
         ),
     ]
