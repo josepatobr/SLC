@@ -3,9 +3,11 @@ from django.shortcuts import render, get_object_or_404
 
 
 def home(request):
-    recommended_movies = Movies.objects.order_by("-watch_count")[:20]
+    #recommended_movies = Movies.objects.order_by("-watch_count")[:20]
+    recommended_movies = Movies.objects.all()
     romance_movies = Movies.objects.filter(gender__genders="ROMANCE")
     action_movies = Movies.objects.filter(gender__genders="ACTION")
+    print(recommended_movies)
 
     return render(
         request,
