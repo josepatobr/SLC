@@ -1,28 +1,39 @@
-<body>
-    <div>
-        <div class="filme-detalhes">
+{% extends "base.html" %}
+{% load static %}
 
-            {% if movie.video %}
-                <video width="640" height="360" controls>
-                    <source src="{{ movie.video.url }}" type="video/mp4">
-                    Seu navegador não suporta vídeo.
-                </video>
-            {% else %}
-                <p><em>Vídeo ainda não disponível.</em></p>
-            {% endif %}
+{% block 'body' %}
+    <body class="border-black bg-white overflow-auto">
+        <div class="border-black bg-gray-100">
+            <div class="filme-detalhes">
+                {% if movie.video %}
+                    <div class="flex justify-center items-center">
+                        <video width="300" height="110" controls>
+                            <source src="{{ movie.video.url }}" type="video/mp4">
+                            Seu navegador não suporta vídeo.
+                        </video>
+                    </div>
+                {% else %}
+                    <p><em>Vídeo ainda não disponível.</em></p>
+                {% endif %}
 
-            <h1>{{ movie.name_movie }}</h1>
-            
-            <p><strong>Gêneros:</strong>
-                {% for genero in movie.gender.all %}
-                    {{ genero.gender }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
+                <br>
+                <h1 class="underline text-4xl text-center">{{ movie.name_movie }}</h1>
+                <br>
 
-            <p><strong>Descrição:</strong> {{ movie.description }}</p>
+                <p class="text-center underline"><strong>Gêneros</strong>
+                    {% for genero in movie.gender.all %}
+                        {{ genero.gender }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <br>
 
-            <p><strong>Data de lançamento:</strong> {{ movie.release_date }}</p>
+                <p class="text-center underline"><strong>Descrição</strong> </p>
+                    <div class="text-center underline">{{ movie.description }}</div> 
+                <br>
 
+                <p class="text-center underline"><strong>Data de lançamento:</strong> {{ movie.release_date }}</p>
+
+            </div>
         </div>
-    </div>
-</body>
+    </body>
+{% endblock 'body' %}

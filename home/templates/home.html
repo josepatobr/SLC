@@ -4,21 +4,21 @@
 
 
 {% block 'body' %}
-    <body class="bg-gray-100">
-        <div>
-            <br>
-            <br>
-            <br>
-            <div class=" border-black  bg-white h-[250px] w-[1400px] bg-black  shadow-xl">
-                <div class="text-black p-2 font-bold">Recomendados</div>
-                {% for recommended_movie in recommended_movies %}
-                    <div class="my-4">
-                        <a href="{% url 'movie' id=recommended_movie.id %}">
-                            <img src="{{ recommended_movie.poster.url }}" alt="{{ recommended_movie.name_movie }}" width="200">
-                            <h3 class="text-white mt-2">{{ recommended_movie.name_movie }}</h3>
-                        </a>
+    <body class="bg-gray-100 ">
+        <div class="m-5"> 
+            <div class=" border-black  bg-white h-[280px] w-[1400px] bg-black  shadow-xl">
+               <div class="text-black p-2 font-bold underline">Recomendados</div>
+                    <div class="flex flex-wrap gap-4 p-4">
+                        {% for recommended_movie in recommended_movies %}
+                            <div class="w-32">
+                                <a href="{% url 'movie' id=recommended_movie.id %}">
+                                    <img src="{{ recommended_movie.poster.url }}" alt="{{ recommended_movie.name_movie }}" width="100">
+                                    <h3 class="text-black mt-2 text-sm text-center underline">{{ recommended_movie.name_movie }}</h3>
+                                </a>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                </div>
             </div>
         </div>
     </body>
