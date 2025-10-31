@@ -19,7 +19,7 @@ class Gender(models.Model):
 
 
 class Movies(models.Model):
-    movie = models.FileField(upload_to="movies", null=True, blank=True)
+    video = models.FileField(upload_to="movies", null=True, blank=True)
     name_movie = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=1000, blank=False, null=False)
     gender = models.ManyToManyField(
