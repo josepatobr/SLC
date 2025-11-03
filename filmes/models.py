@@ -1,5 +1,6 @@
 from django.db import models
 from slugify import slugify
+from cadastro.models import CustomUser
 
 
 class Gender(models.Model):
@@ -39,3 +40,12 @@ class Movies(models.Model):
     class Meta:
         verbose_name = "Movie"
         verbose_name_plural = "Movies"
+
+
+class MovieView(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    movie = models.ForeignKey("Movies", on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "movie")

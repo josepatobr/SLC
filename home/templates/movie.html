@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block 'body' %}
+{% block extra_head %}
+  <script src="{% static 'js/movie.js' %}"></script>
+{% endblock extra_head %}
+
+
+{% block body %}
     <body class="border-black bg-white overflow-auto">
         <div class="border-black bg-gray-100">
             <div class="filme-detalhes">
                 {% if movie.video %}
                     <div class="flex justify-center items-center">
-                        <video width="300" height="110" controls>
+                        <video id="Video" width="300" height="110" controls>
                             <source src="{{ movie.video.url }}" type="video/mp4">
                             Seu navegador não suporta vídeo.
                         </video>
@@ -36,4 +41,4 @@
             </div>
         </div>
     </body>
-{% endblock 'body' %}
+{% endblock body %}
