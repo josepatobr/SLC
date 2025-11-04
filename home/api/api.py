@@ -20,3 +20,7 @@ def CounterView(request, movie_id):
             movie.view_counter()
             MovieView.objects.create(user=request.user, movie=movie)
         return JsonResponse({"status": "ok", "watch_count": movie.watch_count})
+    if already_viewed:
+        return JsonResponse({"status": "already_viewed", "watch_count": movie.watch_count})
+    else:
+        return JsonResponse({"status": "unauthenticated"}, status=401)
