@@ -12,7 +12,7 @@
             <div class="filme-detalhes">
                 {% if movie.video %}
                     <div class="flex justify-center items-center">
-                        <video id="Video" width="300" height="110" controls>
+                        <video id="Video" data-movie-id="{{ movie.id }}" width="300" height="110" controls>
                             <source src="{{ movie.video.url }}" type="video/mp4">
                             Seu navegador não suporta vídeo.
                         </video>
