@@ -158,3 +158,6 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 # TOKENS
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 SMS_KEY = os.getenv("SMS_KEY")
+
+#LOGOUT
+LOGOUT_REDIRECT_URL = 'home/'
