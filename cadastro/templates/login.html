@@ -4,121 +4,10 @@
 {% block 'extra_head' %}
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'js/login.js' %}" async defer></script>
+    <link href="{% static 'css/cadastro.css' %}" rel="stylesheet">
 
     <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
 {% endblock 'extra_head' %}
-
-
-<style>
-/* From Uiverse.io by cssbuttons-io */ 
-.fancy {
-    background-color: transparent;
-    border: 2px solid #000;
-    border-radius: 0;
-    box-sizing: border-box;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    float: right;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    margin: 0;
-    outline: none;
-    overflow: visible;
-    padding: 1.25em 2em;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    text-transform: none;
-    transition: all 0.3s ease-in-out;
-    user-select: none;
-    font-size: 13px;
-}
-
-.fancy::before {
-    content: " ";
-    width: 1.5625rem;
-    height: 2px;
-    background: black;
-    top: 50%;
-    left: 1.5em;
-    position: absolute;
-    transform: translateY(-50%);
-    transform-origin: center;
-    transition: background 0.3s linear, width 0.3s linear;
-}
-
-.fancy .text {
-    font-size: 1.125em;
-    line-height: 1.33333em;
-    padding-left: 2em;
-    display: block;
-    text-align: left;
-    transition: all 0.3s ease-in-out;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: black;
-}
-
-.fancy .top-key {
-    height: 2px;
-    width: 1.5625rem;
-    top: -2px;
-    left: 0.625rem;
-    position: absolute;
-    background: #e8e8e8;
-    transition: width 0.5s ease-out, left 0.3s ease-out;
-}
-
-.fancy .bottom-key-1 {
-    height: 2px;
-    width: 1.5625rem;
-    right: 1.875rem;
-    bottom: -2px;
-    position: absolute;
-    background: #e8e8e8;
-    transition: width 0.5s ease-out, right 0.3s ease-out;
-}
-
-.fancy .bottom-key-2 {
-    height: 2px;
-    width: 0.625rem;
-    right: 0.625rem;
-    bottom: -2px;
-    position: absolute;
-    background: #e8e8e8;
-    transition: width 0.5s ease-out, right 0.3s ease-out;
-}
-
-.fancy:hover {
-    color: white;
-    background: black;
-}
-
-.fancy:hover::before {
-    width: 0.9375rem;
-    background: white;
-}
-
-.fancy:hover .text {
-    color: white;
-    padding-left: 1.5em;
-}
-
-.fancy:hover .top-key {
-    left: -2px;
-    width: 0px;
-}
-
-.fancy:hover .bottom-key-1,
-    .fancy:hover .bottom-key-2 {
-        right: 0;
-        width: 0;
-}
-
-
-
-</style>
 
 
 {% block 'body' %}
@@ -126,7 +15,7 @@
         <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
             
-            <label for="opcao" class="block text-sm font-medium text-gray-700">Escolhe umas das formas de entradas:</label>
+            <label for="opcao" class="flex justify-center text-sm font-medium text-gray-700">Escolhe umas das formas de entradas</label>
                 <select id="opcao" name="opcao" class="mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
                     <div class="text-center flex items-center justify-center">
                         <option  value="codigo-email">Entrar com código via email</option>
@@ -153,15 +42,26 @@
                 <input type="password" id="senha" name="senha" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <br>
-            <button class="fancy" id="enviar">
-                <span class="top-key"></span>
-                <span class="text">entrar</span>
-                <span class="bottom-key-1"></span>
-                <span class="bottom-key-2"></span>
-            </button>
 
+            <!-- BOTÕES -->
+                <div class="justify-center flex">
+                    <a class="fancy" href="/auth/cadastro/">
+                        <span class="top-key"></span>
+                        <span class="text">cadastro</span>
+                        <span class="bottom-key-1"></span>
+                        <span class="bottom-key-2"></span>
+                    </a>
+                </div>
 
-
+                <br>
+                <div class="justify-center flex">
+                    <button class="fancy" id="enviar">
+                        <span class="top-key"></span>
+                        <span class="text">entrar</span>
+                        <span class="bottom-key-1"></span>
+                        <span class="bottom-key-2"></span>
+                    </button>
+                </div>
 
             <div id="sms-code-section" class="mt-4 hidden">
                 <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone:</label>
@@ -192,20 +92,6 @@
                 </div>
             </div>
             <br> 
-            <br>
-
-
-        
-            <a class="fancy" href="/auth/cadastro/">
-                <span class="top-key"></span>
-                <span class="text">cadastro</span>
-                <span class="bottom-key-1"></span>
-                <span class="bottom-key-2"></span>
-            </a>
-
-
-            <br>
-
 
             <!-- GOOGLE -->
             <div id="g_id_onload"
