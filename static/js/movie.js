@@ -1,39 +1,83 @@
-const movieId = video.dataset.movieId;
 const video = document.getElementById('Video');
 
-let tempoAssistido = 0;
-let intervalo;
+if (video) {
+    const movieId = video.dataset.movieId; 
+    
+    let tempoAssistido = 0;
+    let intervalo = null; 
 
+    function stopCounting() {
+        if (intervalo) {
+            clearInterval(intervalo);
+            intervalo = null;
+        }
+    }
 
-video.addEventListener('play', () => {
-    intervalo = setInterval(() => {
-        tempoAssistido += 1;
-    }, 1000);
+    function incrementWatchCount() {
+        const hasWatched = localStorage.getItem(`watched_${movieId}`);
+        
 
-    const hasWatched = localStorage.getItem(`watched_${movieId}`);
-    if (!hasWatched) {
-        fetch("{% url 'CounterView' movie.id %}", {
+        const csrfToken = video.dataset.csrfToken;
+        const counterUrl = video.dataset.counterUrl;
+
+        if (!movieId) {
+             console.error("Erro: movie.id não encontrado no dataset.");
+             return;
+        }
+
+        if (!hasWatched) {
+        fetch(counterUrl, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
+                'X-CSRFToken': csrfToken, 
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({})
         })
-        .then(res => res.json())
-        .then(data => {
-            localStorage.setItem(`watched_${movieId}`, true);
-            console.log('Contador atualizado:', data.watch_count);
-        });
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Erro HTTP ${res.status}: Falha ao atualizar contador.`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                localStorage.setItem(`watched_${movieId}`, true);
+                console.log('Contador atualizado:', data.watch_count);
+            })
+            .catch(err => {
+                console.error('Erro no contador do backend:', err.message);
+            });
+        }
     }
-});
 
-video.addEventListener('pause', () => {
-    clearInterval(intervalo);
-    console.log(`Assistido até agora: ${tempoAssistido} segundos`);
-});
 
-video.addEventListener('ended', () => {
-    clearInterval(intervalo);
-    console.log(`Vídeo completo assistido: ${tempoAssistido} segundos`);
-});
+    // --- LISTENERS ---
+    video.addEventListener('play', () => {
+        if (video.currentTime === 0) {
+             tempoAssistido = 0;
+        }
+
+        if (!intervalo) {
+            intervalo = setInterval(() => {
+                tempoAssistido += 1;
+            }, 1000);
+        }
+        
+        incrementWatchCount();
+    });
+
+    video.addEventListener('pause', () => {
+        stopCounting();
+        console.log(`Assistido até agora: ${tempoAssistido} segundos`);
+    });
+
+    video.addEventListener('ended', () => {
+        stopCounting();
+        console.log(`Vídeo completo assistido: ${tempoAssistido} segundos`);
+
+    });
+
+    video.addEventListener('seeking', stopCounting); 
+} else {
+    console.error("Elemento de vídeo com ID 'Video' não encontrado.");
+}

@@ -1,3 +1,25 @@
+const authModeSelect = document.getElementById("opcao");
+const enviarBtn = document.getElementById("EnviarDados");
+const confirmarCodigo = document.getElementById("confirmarCodigo");
+const fecharPopup = document.getElementById("fecharPopup"); 
+const popup = document.getElementById("popup-codigo"); 
+
+// 2. FUNÇÕES UTILITÁRIAS
+function setAuthTokens(data) {
+    if (data.access) {
+        localStorage.setItem("access", data.access);
+    }
+    if (data.refresh) { 
+        localStorage.setItem("refresh", data.refresh);
+    }
+    localStorage.removeItem("token"); 
+}
+
+function redirectToHome() {
+    window.location.href = "home/";
+}
+
+
 //sistema de login com o google
 function handleCredentialResponse(response){
     const jwt = response.credential;
@@ -25,173 +47,226 @@ function handleCredentialResponse(response){
 //sistema de trocas
 
 function changeOption() {
-    const authModeSelect = document.getElementById("opcao");
-    const defaultAuthMode = "senha-email";
+    if (!authModeSelect) return;
+
     const authModeMap = {
         "senha-email": "email-password-section",
         "codigo-email": "email-code-section",
         "codigo-sms": "sms-code-section"
     };
+
+    const selectedValue = authModeSelect.value || "senha-email";
     
-    if (!authModeSelect) return;
-
-    const selectedValue = authModeSelect.value || defaultAuthMode;
-    const targetElement = document.getElementById(authModeMap[selectedValue]);
-        if (!targetElement) return;
-
     for (const mode in authModeMap) {
         const element = document.getElementById(authModeMap[mode]);
         if (!element) continue;
 
         if (mode === selectedValue) {
-            element.classList.replace("hidden", "block")
+            element.classList.remove("hidden");
+            element.classList.add("block");
         } else {
-            element.classList.replace("block", "hidden")
+            element.classList.remove("block");
+            element.classList.add("hidden");
         }
     }
 }
-authModeSelect.addEventListener("change", changeOption);
+
+if (authModeSelect) {
+    authModeSelect.addEventListener("change", changeOption);
+}
 
 
 //sistema de enviar dados pra api
-const enviarBtn = document.getElementById("EnviarDados");
 function EnviarDados(endpoint, payload) {
+    fetch(`http://localhost:8000/api/auth/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(async res => {
+        if (!res.ok) {
+            let errorDetail = "Erro desconhecido na autenticação.";
+            try {
+                const errorData = await res.json();
+                errorDetail = errorData.detail || errorData.error || errorDetail; 
+            } catch (e) {
+                errorDetail = `Erro HTTP: ${res.status}.`; 
+            }
+            throw new Error(errorDetail);
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log("Resposta do Backend:", data);
 
+        setAuthTokens(data);
+
+        if (data.access) {
+            console.log("Login bem-sucedido. Redirecionando...");
+            redirectToHome();
+        } else {
+            alert("Sucesso, mas sem tokens recebidos. Falha na autenticação.");
+        }
+    })
+    .catch(err => {
+        console.error("Erro ao enviar:", err);
+        alert(err.message || "Erro de conexão com o servidor. Tente novamente."); 
+    });
+}
+
+//botao enviar
+const getValue = (id) => document.getElementById(id)?.value?.trim() || "";
+
+const validarCampo = (valor, mensagem) => {
+    if (!valor) {
+        alert(mensagem);
+        return false;
+    }
+    return true;
+};
+
+if (enviarBtn) {
+    enviarBtn.addEventListener("click", () => {
+        const modo = getValue("opcao"); 
+        const email = getValue("login-email");
+        const senha = getValue("login-password");
+        const telefone = getValue("code-telefone");
+    
+        switch (modo) {
+            case "codigo-email":
+                if (!validarCampo(email, "Digite seu email.")) return;
+                fetchAndHandleCodeSend("enviar-codigo/", { email }, "email"); 
+                break;
+
+            case "senha-email":
+                if (!validarCampo(email, "Digite seu email.")) return;
+                if (!validarCampo(senha, "Digite sua senha.")) return;
+                EnviarDados("login-email/", { email, senha }); 
+                break;
+
+            case "codigo-sms":
+                if (!validarCampo(telefone, "Digite seu telefone.")) return;
+                fetchAndHandleCodeSend("enviar-codigo/", { telefone }, "sms");
+                break;
+                
+            default:
+                alert("Selecione um modo válido.");
+        }
+    });
+}
+
+function fetchAndHandleCodeSend(endpoint, payload, tipo) {
     fetch(`http://localhost:8000/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     })
     .then(res => {
-        if (!res.ok) throw new Error("Erro na resposta da API");
+        if (!res.ok) throw new Error("Erro ao enviar código. Verifique os dados e tente novamente.");
         return res.json();
     })
-    .then(data => {
-        localStorage.setItem("token", data.token);
-        console.log("Login bem-sucedido:", data);
-        window.location.href = "home/";
+    .then(() => {
+        mostrarPopup(tipo); 
+        console.log(`Pedido de código enviado com sucesso para ${tipo}.`);
     })
     .catch(err => {
-        console.error("Erro ao enviar:", err);
-        alert("Email ou senha inválidos.");
+        console.error("Erro ao enviar código:", err);
+        alert(err.message || "Falha na comunicação com o servidor.");
     });
 }
-
-
-//botao enviar
-
-enviarBtn.addEventListener("click", () => {
-    const modo = document.getElementById("opcao").value;
-    const email = getValue("login-email");
-    const senha = getValue("login-password");
-    const telefone = getValue("code-telefone");
-    const getValue = (id) => document.getElementById(id)?.value?.trim();
-
-    const validarCampo = (valor, mensagem) => {
-        if (!valor) {
-            alert(mensagem);
-            return false;
-        }
-        return true;
-    };
-
-    switch (modo) {
-        case "codigo-email":
-            if (!validarCampo(email, "Digite seu email.")) return;
-                EnviarDados("enviar-codigo/", { email });
-                mostrarPopup("email");
-        break;
-
-        case "senha-email":
-            if (!validarCampo(email, "Digite seu email.")) return;
-            if (!validarCampo(senha, "Digite sua senha.")) return;
-                EnviarDados("login-email/", { email, senha });
-            break;
-
-         case "codigo-sms":
-            if (!validarCampo(telefone, "Digite seu telefone.")) return;
-                EnviarDados("enviar-codigo/", { telefone });
-                mostrarPopup("sms");
-            break;
-        default:
-            alert("Selecione um modo válido.");
-}});
-
 
 //PopUp
 
 function mostrarPopup(tipo) {
-const popup = document.getElementById("popup-codigo");
-const titulo = document.getElementById("popup-titulo");
+    const popup = document.getElementById("popup-codigo");
+    const titulo = document.getElementById("popup-titulo");
 
-  if (popup) {
-    titulo.textContent = tipo === "sms" ? "Digite o código recebido por SMS" : "Digite o código recebido por Email";
-    popup.classList.remove("hidden");
-    popup.classList.add("block");
-  }
+    if (popup && titulo) {
+        titulo.textContent = tipo === "sms" 
+            ? "Digite o código recebido por SMS" 
+            : "Digite o código recebido por Email";
+        
+        popup.classList.remove("hidden");
+        popup.classList.add("block");
+    } else {
+        console.error("Erro: Elementos 'popup-codigo' ou 'popup-titulo' não encontrados no DOM.");
+    }
 }
 
 //sistema de confirmar codigo
-confirmarCodigo.addEventListener("click", () => {
-    const modo = document.getElementById("opcao").value;
-    const codigo = document.getElementById("codigo").value?.trim();
 
-    if (!codigo || codigo.length !== 6) {
-        alert("Digite um código válido de 6 dígitos.");
-        return;
-    }
-
-    let payload = {};
-    let endpoint = "";
-
-    if (modo === "codigo-email") {
-        const email = document.getElementById("login-email").value?.trim();
-        if (!email) return alert("Email não encontrado.");
-            payload = { email, codigo };
-            endpoint = "login-email-codigo/";
-        } 
-        else if (modo === "codigo-sms") {
-            const telefone = document.getElementById("code-telefone").value?.trim();
+if (confirmarCodigo) {
+    confirmarCodigo.addEventListener("click", () => {
+        const modo = getValue("opcao"); 
+        const codigo = getValue("codigo");
         
-            if (!telefone) return alert("Telefone não encontrado.");
-            payload = { telefone, codigo };
+        if (!codigo || codigo.length !== 6) {
+            alert("Digite um código válido de 6 dígitos.");
+            return;
+        }
+
+        let payload = { codigo };
+        let endpoint = "";
+        let identificador = ""; 
+
+        if (modo === "codigo-email") {
+            identificador = getValue("login-email");
+            if (!identificador) return alert("Email não encontrado. Tente enviar o código novamente.");
+            payload.email = identificador;
+            endpoint = "login-email-codigo/";
+        } else if (modo === "codigo-sms") {
+            identificador = getValue("code-telefone");
+            if (!identificador) return alert("Telefone não encontrado. Tente enviar o código novamente.");
+            payload.telefone = identificador;
             endpoint = "login-sms/";
-        } 
-        else {
-            alert("Modo inválido.");
-        return;
-    }
+        } else {
+            alert("Modo inválido. Feche o popup e selecione o modo novamente.");
+            return;
+        }
 
         fetch(`http://localhost:8000/api/auth/${endpoint}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         })
-        .then(res => {
-            if (!res.ok) throw new Error("Código inválido ou expirado.");
+        .then(async res => {
+            if (!res.ok) {
+                let errorDetail = "Código inválido ou expirado.";
+                try {
+                    const errorData = await res.json();
+                    errorDetail = errorData.detail || errorData.error || errorDetail;
+                } catch (e) {
+                }
+                throw new Error(errorDetail);
+            }
             return res.json();
         })
         .then(data => {
             console.log("Login confirmado:", data);
-            popup.classList.add("hidden");
-            popup.classList.remove("block");
+            
+            if (popup) {
+                popup.classList.add("hidden");
+                popup.classList.remove("block");
+            }
 
-        if (data.access && data.refresh) {
-            localStorage.setItem("access", data.access);
-            localStorage.setItem("refresh", data.refresh);
-            window.location.href = "home/";
-        } else {
-            alert("Código inválido ou expirado.");
-        }
-    })
+            setAuthTokens(data); 
+
+            if (data.access) {
+                window.location.href = "home/";
+            } else {
+                alert("Autenticação bem-sucedida, mas sem tokens recebidos. Tente o login manual.");
+            }
+        })
         .catch(err => {
             console.error("Erro ao confirmar código:", err);
-            alert("Erro ao verificar o código.");
+            alert(err.message || "Erro de conexão ao verificar o código.");
         });
-});
+    });
+}
 
-fecharPopup.addEventListener("click", () => {
-    popup.classList.add("hidden");
-    popup.classList.remove("block");
-});
-
+if (fecharPopup && popup) {
+    fecharPopup.addEventListener("click", () => {
+        popup.classList.add("hidden");
+        popup.classList.remove("block");
+    });
+}
