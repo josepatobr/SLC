@@ -4,8 +4,6 @@
 {% block 'extra_head' %}
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'js/login.js' %}" async defer></script>
-    <link href="{% static 'css/cadastro.css' %}" rel="stylesheet">
-
     <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
 {% endblock 'extra_head' %}
 
@@ -18,9 +16,9 @@
             <label for="opcao" class="flex justify-center text-sm font-medium text-gray-700">Escolhe umas das formas de entradas</label>
                 <select id="opcao" name="opcao" class="mt-1 block w-full px-3 py-2 border rounded bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex text-center items-center justify-center">
                     <div class="text-center flex items-center justify-center">
-                        <option  value="codigo-email">Entrar com código via email</option>
-                        <option  value="codigo-sms">Entrar com código via sms (isso só serve se você adicionou o telefone no cadastro)</option>
-                        <option  value="senha-email">Entrar com a senha e o email</option>
+                        <option  value="codigo-email">Entrar com código atraves do email</option>
+                        <option  value="codigo-sms">Entrar com código via sms (isso só funciona se você adicionou o telefone no cadastro)</option>
+                        <option  value="senha-email" selected>Entrar com senha e email</option>
                     </div>
                 </select>
 

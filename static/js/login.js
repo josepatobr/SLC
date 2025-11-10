@@ -22,29 +22,30 @@
     }
     
     
-    const select = document.getElementById("opcao");
-    const emailCodeSection = document.getElementById("email-code-section");
-    const smsCodeSection = document.getElementById("sms-code-section");
-    const emailPasswordSection = document.getElementById("email-password-section");
+    function ChangeOption() {
+        const selectedValue = select.value;
+        const targetElement = document.getElementById(selectedValue);
 
-    function atualizarSecao() {
-        const value = select.value;
+        const senha_email = document.getElementById("senha-email")
 
-        emailCodeSection.classList.add("hidden");
-        smsCodeSection.classList.add("hidden");
-        emailPasswordSection.classList.add("hidden");
+        
+        if (targetElement) {
+            targetElement.classList.remove("hidden");
+        }
 
-        if (value === "codigo-email") {
-        emailCodeSection.classList.remove("hidden");
-        } else if (value === "codigo-sms") {
-        smsCodeSection.classList.remove("hidden");
-        } else if (value === "senha-email") {
-        emailPasswordSection.classList.remove("hidden");
+        if (selectedValue === senha_email){
+            const senhaSection = document.getElementById("email-password-section");
+            if (senhaSection) {
+                senhaSection.classList.remove("hidden");
         }
     }
+        
+    }
 
-    select.addEventListener("change", atualizarSecao);
-    window.addEventListener("DOMContentLoaded", atualizarSecao);
+    select.addEventListener("change", ChangeOption);
+    window.addEventListener("DOMContentLoaded", ChangeOption);
+
+
 
     // sistema de enviar dados
     const enviarBtn = document.getElementById("enviar");
@@ -81,6 +82,20 @@
         return;
         }
     enviarCodigo("enviar-codigo/", { email });
+
+    } else if (modo === "senha-email") {
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("password").value;
+
+        if (!email) {
+            alert("Digite seu email.");
+        return;
+        }
+        if (!senha) {
+            alert("Digite sua senha.");
+        return;
+        }
+    enviarCodigo("login-email/", { email }, { senha });
 
     } else if (modo === "codigo-sms") {
         const telefone = document.getElementById("telefone").value;

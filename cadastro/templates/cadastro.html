@@ -4,10 +4,8 @@
 
 
 {% block 'extra_head' %}
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="{% static 'js/cadastro.js' %}"></script>
-
-  <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com">
 {% endblock 'extra_head' %}
 
 {% block 'body' %}
@@ -26,18 +24,15 @@
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div class="mb-4">
-                <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                    <input type="tel" id="telefone" name="telefone" required
-                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
+                    <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                </div>
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" id="password" name="password" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <input type="password" id="password" name="password" required 
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                    
                     <button type="button" id="toggle-password">👁️</button>
-                
-             
-
                 </div>
                     <button type="submit"
                         class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
@@ -45,32 +40,29 @@
                     </button>
                     <div id="erro-msg" class="mt-4 text-center text-sm font-medium"></div>
                 <div>
-                  <a href="/auth/login/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 text-center justify-center flex">
-                    login
-                  </a>
+                    <a href="/auth/login/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 text-center justify-center flex">
+                        login
+                    </a>
                 </div>
-
-        
             </form>
 
-          
-        <br>
-        <!-- GOOGLE -->
-        <div id="g_id_onload"
-            data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
-            data-context="signin"
-            data-callback="handleCredentialResponse"
-            data-itp_support="true">
-        </div>
+            <br>
+            <!-- GOOGLE -->
+            <div id="g_id_onload"
+                data-client_id="325709064395-i6ekj4gdhrmradqgeulted7hno887f9q.apps.googleusercontent.com"
+                data-context="signin"
+                data-callback="handleCredentialResponse"
+                data-itp_support="true">
+            </div>
 
-        <div class="g_id_signin"
-            data-type="standard"
-            data-shape="rectangular"
-            data-theme="outline"
-            data-text="signin_with"
-            data-size="large"
-            data-logo_alignment="left">
+            <div class="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left">
+            </div>
         </div>
-      </div>
     </div>
 {% endblock 'body' %}
