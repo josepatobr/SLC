@@ -1,23 +1,16 @@
-from django.core.mail import send_mail
 from dotenv import load_dotenv
-import os
+from django.template.loader import render_to_string
 
 load_dotenv()
 
 
 def enviar_email(destinatario, codigo):
-    assunto = "Seu código de login"
-    mensagem = f"Olá!\n\nSeu código de acesso é: {codigo}\n\nEle expira em 10 minutos."
-    remetente = os.getenv("EMAIL_REMETENTE")
+    EXPIRATION_MINUTES = 5
 
-    try:
-        send_mail(
-            subject=assunto,
-            message=mensagem,
-            from_email=remetente,
-            recipient_list=[destinatario],
-            fail_silently=False,
-        )
-        return "Email enviado com sucesso"
-    except Exception as e:
-        return f"Erro ao enviar email: {str(e)}"
+    context = {
+        "codigo": codigo,
+        "expiracao_minutos": EXPIRATION_MINUTES,
+        "username": destinatario.split("@")[0],
+    }
+
+    html_content = render_to_string("email/codigo_login.html", context)

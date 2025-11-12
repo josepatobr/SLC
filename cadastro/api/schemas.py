@@ -1,16 +1,41 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from ninja import Schema
 
 
 class CadastroSchemas(BaseModel):
-    username: str = Field(min_length=3)
-    email: EmailStr = Field(min_length=6, unique=True)
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr = Field(min_length=6)
     password: str = Field(min_length=6)
-    telefone: Optional[str]
+    telefone: Optional[str] = Field(max_length=15, default=None)
 
 
-class CadastroOut(BaseModel):
+class LoginEmailSenha(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class CodigoBase(BaseModel):
+    codigo: str = Field(min_length=6, max_length=6)
+
+
+class LoginSMS(CodigoBase):
+    telefone: str
+
+
+class LoginEmailCodigo(CodigoBase):
+    email: EmailStr
+
+
+class CodigoRequest(BaseModel):
+    telefone: Optional[str] = Field(default=None)
+    email: Optional[EmailStr] = Field(default=None)
+
+
+class GoogleTokenSchema(BaseModel):
+    token: str
+
+
+class AuthOut(BaseModel):
     id: int
     username: str
     email: EmailStr
@@ -19,35 +44,3 @@ class CadastroOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class LoginEmailSenha(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class LoginSMS(BaseModel):
-    telefone: str
-    codigo: str
-
-
-class LoginEmailCodigo(BaseModel):
-    email: EmailStr
-    codigo: str
-
-
-class LoginOut(BaseModel):
-    id: int
-    username: str
-    email: EmailStr
-    access: str
-    refresh: str
-
-
-class CodigoRequest(BaseModel):
-    telefone: Optional[str]
-    email: Optional[EmailStr]
-
-
-class GoogleTokenSchema(Schema):
-    token: str
