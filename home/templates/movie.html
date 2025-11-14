@@ -1,77 +1,97 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block extra_head %}
-  <script src="{% static 'js/movie.js' %}"></script>
-{% endblock extra_head %}
+{% block 'extra_head' %}
+    <script src="{% static 'js/movie.js' %}"></script>
+{% endblock 'extra_head' %}
 
-{% block body %}
-    <body class="border-black bg-white overflow-auto">
-        <div class="border-black bg-gray-100">
-            <div class="filme-detalhes">
-                {% if movie.video %}
-                    <div class="flex justify-center items-center">
-                        <video 
-                            id="Video" 
-                            data-movie-id="{{ movie.id }}" 
-                            data-csrf-token="{{ csrf_token }}" 
-                            data-counter-url="{% url 'CounterView' movie.id %}"
-                            width="300" 
-                            height="110" 
-                            controls
-                            >
-                            <source src="{{ movie.video.url }}" type="video/mp4">
-                                Seu navegador não suporta vídeo.
-                        </video>
-                    </div>
-                {% else %}
-                    <p><em>Vídeo ainda não disponível.</em></p>
-                {% endif %}
+{% block 'body' %}
+    <main class="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
+        <div class="max-w-4xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-10">
 
-
-                <form method="POST" action="{% url 'movie' movie.id %}">{% csrf_token %}
-                    <div class="flex flex-row-reverse rating">
-                        
-                        <input type="radio" id="star5" name="nota" value="5" class="hidden" />
-                        <label for="star5" class="text-3xl text-gray-400 cursor-pointer star-label" title="5 estrelas">&#9733;</label>
-                        
-                        <input type="radio" id="star4" name="nota" value="4" class="hidden" />
-                        <label for="star4" class="text-3xl text-gray-400 cursor-pointer star-label" title="4 estrelas">&#9733;</label>
-                        
-                        <input type="radio" id="star3" name="nota" value="3" class="hidden" />
-                        <label for="star3" class="text-3xl text-gray-400 cursor-pointer star-label" title="3 estrelas">&#9733;</label>
-                        
-                        <input type="radio" id="star2" name="nota" value="2" class="hidden" />
-                        <label for="star2" class="text-3xl text-gray-400 cursor-pointer star-label" title="2 estrelas">&#9733;</label>
-                        
-                        <input type="radio" id="star1" name="nota" value="1" class="hidden" />
-                        <label for="star1" class="text-3xl text-gray-400 cursor-pointer star-label" title="1 estrela">&#9733;</label>
-                        
-                    </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-black text-center mb-6">
+                {{ movie.name_movie }}
+            </h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-6">
                     
-                    <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Enviar Avaliação
-                    </button>
-                </form>
+                    {% if movie.video %}
+                        <div class="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+                            <video 
+                                id="Video" 
+                                data-movie-id="{{ movie.id }}" 
+                                data-csrf-token="{{ csrf_token }}" 
+                                class="w-full h-full object-cover"
+                                controls
+                            >
+                                <source src="{{ movie.video.url }}" type="video/mp4">
+                                Seu navegador não suporta vídeo.
+                            </video>
+                        </div>
+                    {% else %}
+                        <div class="h-64 flex justify-center items-center bg-gray-700 rounded-lg">
+                            <p class="text-gray-400 text-xl"><em>Trailer indisponível.</em></p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
+                        <h2 class="text-2xl font-semibold text-gray-400 mb-2 border-b border-gray-600 pb-1">Descrição</h2>
+                        <div class="text-black leading-relaxed">{{ movie.description }}</div> 
+                    </div>
 
-                <br>
-                <h1 class="underline text-4xl text-center">{{ movie.name_movie }}</h1>
-                <br>
+                </div>
 
-                <p class="text-center underline"><strong>Gêneros</strong>
-                    {% for genero in movie.gender.all %}
-                        {{ genero.gender }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <br>
+                <div class="lg:col-span-1 space-y-6">
+                    
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center">
+                        <h2 class="text-xl font-semibold mb-3 text-black">Sua Avaliação</h2>
+                        <form method="POST" action="{% url 'movie' movie.id %}" id="ratingForm">
+                            {% csrf_token %}
+                            <div class="flex flex-row-reverse rating justify-center">
+                                
+                                <input type="radio" id="star5" name="nota" value="5" class="hidden"/>
+                                <label for="star5" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="5 estrelas">&#9733;</label>
+                                
+                                <input type="radio" id="star4" name="nota" value="4" class="hidden"/>
+                                <label for="star4" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="4 estrelas">&#9733;</label>
+                                
+                                <input type="radio" id="star3" name="nota" value="3" class="hidden"/>
+                                <label for="star3" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="3 estrelas">&#9733;</label>
+                                
+                                <input type="radio" id="star2" name="nota" value="2" class="hidden"/>
+                                <label for="star2" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="2 estrelas">&#9733;</label>
+                                
+                                <input type="radio" id="star1" name="nota" value="1" class="hidden" />
+                                <label for="star1" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="1 estrela">&#9733;</label>
+                                
+                            </div>
+                            <p class="text-sm text-gray-400 mt-2" id="ratingMessage">Clique em uma estrela para avaliar.</p>
+                        </form>
+                    </div>
 
-                <p class="text-center underline"><strong>Descrição</strong> </p>
-                    <div class="text-center underline">{{ movie.description }}</div> 
-                <br>
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-xl space-y-4">
+                        <div class="border-b border-gray-600 pb-2">
+                            <strong class="block text-lg text-black mb-1">Data de Lançamento</strong> 
+                            <span class="text-black">{{ movie.release_date }}</span>
+                        </div>
+                        
+                        <div>
+                            <strong class="block text-lg text-black mb-1">Gêneros</strong>
+                            <div class="flex flex-wrap gap-2">
+                                {% for genero in movie.gender.all %}
+                                    <span class="bg-blue-600 text-black text-xs font-semibold px-3 py-1 rounded-full">
+                                        {{ genero.gender }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
-                <p class="text-center underline"><strong>Data de lançamento:</strong> {{ movie.release_date }}</p>
-
+                </div>
             </div>
+
         </div>
-    </body>
-{% endblock body %}
+    </main>
+{% endblock 'body' %}

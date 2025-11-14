@@ -81,3 +81,60 @@ if (video) {
 } else {
     console.error("Elemento de vídeo com ID 'Video' não encontrado.");
 }
+
+
+
+
+// sistema de estrela 
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('ratingForm');
+    
+    const messageElement = document.getElementById('ratingMessage'); 
+
+    if (form) {
+        const radioButtons = form.querySelectorAll('input[name="nota"]');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                submitRating(form, messageElement); 
+            });
+        });
+    }
+});
+
+function submitRating(formElement, messageElement) {
+    const url = formElement.action;
+    const csrfToken = formElement.querySelector('[name="csrfmiddlewaretoken"]').value;
+    const selectedNote = formElement.querySelector('input[name="nota"]:checked').value;
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    formData.append('nota', selectedNote);
+    
+    messageElement.textContent = 'Enviando avaliação...';
+    messageElement.classList.remove('text-red-500'); 
+    messageElement.classList.add('text-yellow-400');
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha no servidor ao processar a nota.');
+        }
+        return response.json(); 
+    })
+    .then(data => {
+        console.log('Avaliação salva com sucesso!', data);
+        messageElement.textContent = 'Nota ' + selectedNote + ' registrada! 🎉';
+        messageElement.classList.remove('text-yellow-400');
+        messageElement.classList.add('text-green-500');
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        messageElement.textContent = 'Erro ao salvar: ' + error.message;
+        messageElement.classList.remove('text-yellow-400');
+        messageElement.classList.add('text-red-500');
+    });
+}

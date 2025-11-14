@@ -37,7 +37,7 @@ function handleCredentialResponse(response){
         console.log("Resposta do backend:", data);
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
-        window.location.href = 'home/';
+        window.location.href = '/home/';
     })
     .catch(err => {
     console.error("Erro ao enviar token:", err);

@@ -2,24 +2,50 @@
 {% load static %}
 {% block 'title' %}Home{% endblock 'title' %}
 
-
 {% block 'body' %}
-    <body class="bg-gray-100 ">
-        <div class="m-5"> 
-            <div class=" border-black  bg-white h-[280px] w-[1400px] bg-black  shadow-xl">
-               <div class="text-black p-2 font-bold underline">Recomendados</div>
-                    <div class="flex flex-wrap gap-4 p-4">
-                        {% for recommended_movie in recommended_movies %}
-                            <div class="w-32">
-                                <a href="{% url 'movie' id=recommended_movie.id %}">
-                                    <img src="{{ recommended_movie.poster.url }}" alt="{{ recommended_movie.name_movie }}" width="100">
-                                    <h3 class="text-black mt-2 text-sm text-center underline">{{ recommended_movie.name_movie }}</h3>
-                                </a>
-                            </div>
-                        {% endfor %}
-                    </div>
+<br>
+    <body class="bg-gray-100 min-h-screen">
+        <div class="mx-auto p-5 max-w-screen-xl"> 
+            
+            <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
+                
+                <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
+                    🎬 Recomendados
                 </div>
+                
+                <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
+                    
+                    {% for recommended_movie in recommended_movies %}
+                        <div class="flex-shrink-0 w-32 sm:w-40 text-center">
+                            <a href="{% url 'movie' id=recommended_movie.id %}" class="block group">
+                                
+                                <img 
+                                    src="{{ recommended_movie.poster.url }}" 
+                                    alt="{{ recommended_movie.name_movie }}" 
+                                    class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                >
+                                
+                                <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
+                                    {{ recommended_movie.name_movie }}
+                                </h3>
+                            </a>
+                        </div>
+                    {% endfor %}
+                    
+                </div>
+                
             </div>
         </div>
     </body>
 {% endblock 'body' %}
+
+<style>
+.custom-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.custom-scrollbar {
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
+}
+</style>
