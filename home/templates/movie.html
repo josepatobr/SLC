@@ -28,6 +28,32 @@
                     <p><em>Vídeo ainda não disponível.</em></p>
                 {% endif %}
 
+
+                <form method="POST" action="{% url 'movie' movie.id %}">{% csrf_token %}
+                    <div class="flex flex-row-reverse rating">
+                        
+                        <input type="radio" id="star5" name="nota" value="5" class="hidden" />
+                        <label for="star5" class="text-3xl text-gray-400 cursor-pointer star-label" title="5 estrelas">&#9733;</label>
+                        
+                        <input type="radio" id="star4" name="nota" value="4" class="hidden" />
+                        <label for="star4" class="text-3xl text-gray-400 cursor-pointer star-label" title="4 estrelas">&#9733;</label>
+                        
+                        <input type="radio" id="star3" name="nota" value="3" class="hidden" />
+                        <label for="star3" class="text-3xl text-gray-400 cursor-pointer star-label" title="3 estrelas">&#9733;</label>
+                        
+                        <input type="radio" id="star2" name="nota" value="2" class="hidden" />
+                        <label for="star2" class="text-3xl text-gray-400 cursor-pointer star-label" title="2 estrelas">&#9733;</label>
+                        
+                        <input type="radio" id="star1" name="nota" value="1" class="hidden" />
+                        <label for="star1" class="text-3xl text-gray-400 cursor-pointer star-label" title="1 estrela">&#9733;</label>
+                        
+                    </div>
+                    
+                    <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Enviar Avaliação
+                    </button>
+                </form>
+
                 <br>
                 <h1 class="underline text-4xl text-center">{{ movie.name_movie }}</h1>
                 <br>

@@ -1,7 +1,7 @@
 from django.db import models
 from slugify import slugify
 from cadastro.models import CustomUser
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Gender(models.Model):
     genders = models.CharField(max_length=50, null=False, blank=False)
@@ -49,3 +49,13 @@ class MovieView(models.Model):
 
     class Meta:
         unique_together = ("user", "movie")
+
+
+
+class Avaliação(models.Model):
+    movie_rated = models.ForeignKey(Movies, on_delete=models.CASCADE)
+    note = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)]) 
+    data = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Nota {self.note} para {self.movie_rated.name_movie}"
