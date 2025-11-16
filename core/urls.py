@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from core.api import api
+from .api import api
 from django.conf import settings
 from django.conf.urls.static import static
 

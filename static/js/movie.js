@@ -103,13 +103,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function submitRating(formElement, messageElement) {
-    const url = formElement.action;
+    const movieIdElement = document.getElementById('movie-id');
+    if (!movieIdElement) {
+        console.error("Erro: Não foi possível encontrar o ID do filme (elemento #movie-id).");
+        messageElement.textContent = "Erro de configuração: ID do filme ausente.";
+        return;
+    }
+    const movieId = movieIdElement.value;
+
+    const url = `/api/home/movie/${movieId}/rate/`;
+    
     const csrfToken = formElement.querySelector('[name="csrfmiddlewaretoken"]').value;
     const selectedNote = formElement.querySelector('input[name="nota"]:checked').value;
     
-    const formData = new FormData();
-    formData.append('csrfmiddlewaretoken', csrfToken);
-    formData.append('nota', selectedNote);
+    const payload = JSON.stringify({
+        'nota': parseInt(selectedNote) 
+    });
     
     messageElement.textContent = 'Enviando avaliação...';
     messageElement.classList.remove('text-red-500'); 
@@ -117,11 +126,17 @@ function submitRating(formElement, messageElement) {
     
     fetch(url, {
         method: 'POST',
-        body: formData,
+        headers: {
+            'Content-Type': 'application/json', 
+            'X-CSRFToken': csrfToken 
+        },
+        body: payload 
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Falha no servidor ao processar a nota.');
+            return response.json().then(errorData => {
+                 throw new Error(errorData.message || 'Falha no servidor ao processar a nota.');
+            });
         }
         return response.json(); 
     })

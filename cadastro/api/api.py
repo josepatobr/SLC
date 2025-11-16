@@ -20,11 +20,11 @@ from django.conf import settings
 from ninja.errors import HttpError
 from django.shortcuts import redirect, resolve_url
 
-router = Router()
+router_cadastro = Router()
 COOLDOWN_MINUTES = 1
 
 
-@router.post("cadastro/", response=AuthOut)
+@router_cadastro.post("cadastro/", response=AuthOut)
 def cadastro(request, payload: CadastroSchemas):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))
@@ -34,9 +34,14 @@ def cadastro(request, payload: CadastroSchemas):
     if CustomUser.objects.filter(email=payload.email).exists():
         raise HttpError(400, "Email já cadastrado")
 
+    if CustomUser.objects.filter(cpf=payload.cpf).exists():
+        raise HttpError(400, "CPF já cadastrado")
+
     user = CustomUser.objects.create_user(
+        full_name=payload.full_name,
         username=payload.username,
         email=payload.email,
+        cpf=payload.cpf,
         password=payload.password,
         telefone=payload.telefone,
     )
@@ -46,6 +51,7 @@ def cadastro(request, payload: CadastroSchemas):
 
     return AuthOut(
         id=user.id,
+        full_name=user.full_name,
         username=user.username,
         email=user.email,
         access=str(refresh.access_token),
@@ -53,7 +59,7 @@ def cadastro(request, payload: CadastroSchemas):
     )
 
 
-@router.post("login-email/")
+@router_cadastro.post("login-email/")
 def login_email(request, payload: LoginEmailSenha):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))
@@ -74,7 +80,7 @@ def login_email(request, payload: LoginEmailSenha):
     }
 
 
-@router.post("login-sms/")
+@router_cadastro.post("login-sms/")
 def login_sms(request, payload: LoginSMS):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))
@@ -104,7 +110,7 @@ def login_sms(request, payload: LoginSMS):
     }
 
 
-@router.post("enviar-codigo/")
+@router_cadastro.post("enviar-codigo/")
 def enviar_codigo(request, payload: CodigoRequest):
     if not payload.email and not payload.telefone:
         raise HttpError(400, "Nenhum email ou telefone foi fornecido.")
@@ -148,7 +154,7 @@ def enviar_codigo(request, payload: CodigoRequest):
     return {"status": "Código enviado com sucesso"}
 
 
-@router.post("login-google/")
+@router_cadastro.post("login-google/")
 def login_google(request, payload: GoogleTokenSchema):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))
@@ -194,7 +200,7 @@ def login_google(request, payload: GoogleTokenSchema):
         raise HttpError(401, "Falha na validação do token Google")
 
 
-@router.post("login-email-codigo/")
+@router_cadastro.post("login-email-codigo/")
 def login_email_codigo(request, payload: LoginEmailCodigo):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))

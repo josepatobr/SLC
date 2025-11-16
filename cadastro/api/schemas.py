@@ -3,10 +3,12 @@ from typing import Optional
 
 
 class CadastroSchemas(BaseModel):
+    full_name: str = Field(max_length=200)
     username: str = Field(min_length=3, max_length=50)
-    email: EmailStr = Field(min_length=6)
+    email: EmailStr
+    cpf: str = Field(min_length=11, max_length=11)
     password: str = Field(min_length=6)
-    telefone: Optional[str] = Field(max_length=15, default=None)
+    telefone: Optional[str] = Field(None, max_length=15)
 
 
 class LoginEmailSenha(BaseModel):

@@ -6,19 +6,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('filmes', '0004_movieview'),
+        ("filmes", "0004_movieview"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Avaliação',
+            name="Avaliação",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('note', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('data', models.DateTimeField(auto_now_add=True)),
-                ('movie_rated', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='filmes.movies')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "note",
+                    models.IntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(5),
+                        ]
+                    ),
+                ),
+                ("data", models.DateTimeField(auto_now_add=True)),
+                (
+                    "movie_rated",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="filmes.movies"
+                    ),
+                ),
             ],
         ),
     ]

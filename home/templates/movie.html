@@ -47,7 +47,7 @@
                     
                     <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center">
                         <h2 class="text-xl font-semibold mb-3 text-black">Sua Avaliação</h2>
-                        <form method="POST" action="{% url 'movie' movie.id %}" id="ratingForm">
+                        <form method="POST" action="{% url 'api_rate_movie' movie.id %}" id="ratingForm">
                             {% csrf_token %}
                             <div class="flex flex-row-reverse rating justify-center">
                                 

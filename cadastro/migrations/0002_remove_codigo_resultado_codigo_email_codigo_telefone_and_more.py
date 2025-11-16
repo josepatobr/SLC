@@ -4,36 +4,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('cadastro', '0001_initial'),
+        ("cadastro", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='codigo',
-            name='resultado',
+            model_name="codigo",
+            name="resultado",
         ),
         migrations.AddField(
-            model_name='codigo',
-            name='email',
+            model_name="codigo",
+            name="email",
             field=models.EmailField(blank=True, max_length=200, null=True),
         ),
         migrations.AddField(
-            model_name='codigo',
-            name='telefone',
+            model_name="codigo",
+            name="telefone",
             field=models.CharField(blank=True, max_length=15, null=True),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='telefone',
+            model_name="customuser",
+            name="telefone",
             field=models.CharField(blank=True, max_length=15, null=True, unique=True),
         ),
         migrations.AddConstraint(
-            model_name='codigo',
-            constraint=models.CheckConstraint(condition=models.Q(('email__isnull', False), ('telefone__isnull', False), _connector='OR'), name='email_ou_telefone_requerido'),
+            model_name="codigo",
+            constraint=models.CheckConstraint(
+                condition=models.Q(
+                    ("email__isnull", False),
+                    ("telefone__isnull", False),
+                    _connector="OR",
+                ),
+                name="email_ou_telefone_requerido",
+            ),
         ),
         migrations.DeleteModel(
-            name='Codigo_Selecionado',
+            name="Codigo_Selecionado",
         ),
     ]

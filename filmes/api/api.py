@@ -3,11 +3,11 @@ from django.http import StreamingHttpResponse, HttpResponse
 from django.conf import settings
 import os
 
-router = Router()
+router_movies = Router()
 CHUNK_SIZE = 8192
 
 
-@router.get("video/")
+@router_movies.get("video/")
 def stream_video(request):
     path = os.path.join(settings.BASE_DIR, "media", "video.mp4")
 
