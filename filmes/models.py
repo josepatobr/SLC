@@ -52,7 +52,7 @@ class MovieView(models.Model):
         unique_together = ("user", "movie")
 
 
-class Avaliação(models.Model):
+class Avaliacao(models.Model):
     movie_rated = models.ForeignKey(Movies, on_delete=models.CASCADE)
     note = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     data = models.DateTimeField(auto_now_add=True)

@@ -1,6 +1,6 @@
 from ninja import Router
 from dotenv import load_dotenv
-from filmes.models import MovieView, Movies, Avaliação
+from filmes.models import MovieView, Movies, Avaliacao
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
@@ -43,7 +43,7 @@ def movie_rate_ninja(request: HttpRequest, movie_id: int, payload: RateIn):
 
     try:
         with transaction.atomic():
-            avaliacao, created = Avaliação.objects.update_or_create(
+            avaliacao, created = Avaliacao.objects.update_or_create(
                 movie_rated=movie, user=user, defaults={"note": nota}
             )
         message = (

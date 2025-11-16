@@ -1,8 +1,7 @@
-from filmes.models import Movies, Avaliação
+from filmes.models import Movies
 from django.shortcuts import render, get_object_or_404, redirect
 from cadastro.models import CustomUser, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest
 
 
 def home(request):
