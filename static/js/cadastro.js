@@ -37,33 +37,11 @@ function handleCredentialResponse(response){
   });
 }
 
-// sistema de cpf
-document.getElementById('cpf').addEventListener('input', function (e) {
-    let value = e.target.value.replace(/\D/g, ''); 
-    
-    if (value.length > 11) {
-        value = value.substring(0, 11);
-    }
-    
-    if (value.length > 9) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-    } else if (value.length > 6) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
-    } else if (value.length > 3) {
-        value = value.replace(/^(\d{3})(\d{3})$/, '$1.$2');
-    } else if (value.length > 0) {
-        value = value.replace(/^(\d{3})$/, '$1');
-    }
-    
-    e.target.value = value;
-});
-
 
 // sistema de cadastro
 const username = document.getElementById("username");
 const full_name = document.getElementById("full_name")
 const email = document.getElementById("email");
-const cpf = document.getElementById("cpf")
 const telefone = document.getElementById("telefone");
 const password = document.getElementById("password");
 const form = document.getElementById("form-cadastro");
@@ -85,12 +63,10 @@ togglePassword.addEventListener("click", function () {
 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
-  const cleanCpf = cpf.value.trim().replace(/\D/g, '');
 
   if (
       full_name.value.trim() === "" ||
       username.value.trim() === "" ||
-      cleanCpf === "" ||
       email.value.trim() === "" ||
       password.value.trim() === ""
     ) {
@@ -108,10 +84,6 @@ const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
     showMessage("A senha deve ter no mínimo 8 caracteres.");
   return;
 }
-  if (cleanCpf.length !== 11) {
-    showMessage("O CPF deve conter exatamente 11 dígitos.");
-  return;
-}
 
 
 botao.disabled = true;
@@ -126,7 +98,6 @@ fetch("/api/auth/cadastro/", {
       username: username.value,
       full_name: full_name.value,
       email: email.value,
-      cpf: cleanCpf,
       telefone: telefone.value,
       password: password.value,
     }),

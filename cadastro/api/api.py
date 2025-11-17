@@ -34,14 +34,10 @@ def cadastro(request, payload: CadastroSchemas):
     if CustomUser.objects.filter(email=payload.email).exists():
         raise HttpError(400, "Email já cadastrado")
 
-    if CustomUser.objects.filter(cpf=payload.cpf).exists():
-        raise HttpError(400, "CPF já cadastrado")
-
     user = CustomUser.objects.create_user(
         full_name=payload.full_name,
         username=payload.username,
         email=payload.email,
-        cpf=payload.cpf,
         password=payload.password,
         telefone=payload.telefone,
     )
