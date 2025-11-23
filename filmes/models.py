@@ -59,3 +59,76 @@ class Avaliacao(models.Model):
 
     def __str__(self):
         return f"Nota {self.note} para {self.movie_rated.name_movie}"
+
+
+class MoviesWatched(models.Model):
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, verbose_name="Usuário"
+    )
+    movie_watched = models.ForeignKey(
+        Movies, on_delete=models.CASCADE, verbose_name="Filme"
+    )
+    watched_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Data de Visualização"
+    )
+
+    def __str__(self):
+        return f"{self.user.username} assistiu {self.movie_watched.name_movie} em {self.watched_at.strftime('%Y-%m-%d')}"
+
+
+class Serie(models.Model):
+    name_serie = models.CharField(max_length=100, blank=False, null=False)
+    description = models.CharField(max_length=1000, blank=False, null=False)
+    gender = models.ManyToManyField(Gender)
+    serie_poster = models.ImageField(
+        upload_to="series_posters", blank=False, null=False
+    )
+
+
+class Season(models.Model):
+    serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name="seasons")
+    season_number = models.PositiveIntegerField(default=1, unique=True)
+
+    class Meta:
+        unique_together = ("serie", "season_number")
+        ordering = ["season_number"]
+
+    def __str__(self):
+        return f"{self.serie.name_serie} - Temporada {self.season_number}"
+
+
+class Episode(models.Model):
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE, related_name="episodes"
+    )
+    episode_number = models.PositiveIntegerField(default=1)
+    episode_title = models.CharField(max_length=200)
+    episode_video = models.FileField(
+        upload_to="series_episodes", null=False, blank=False
+    )
+
+    class Meta:
+        unique_together = ("season", "episode_number")
+        ordering = ["episode_number"]
+
+    def __str__(self):
+        return (
+            f"S{self.season.season_number}E{self.episode_number}: {self.episode_title}"
+        )
+
+
+class EpisodeWatched(models.Model):
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, verbose_name="Usuário"
+    )
+    episode_watched = models.ForeignKey(
+        Episode, on_delete=models.CASCADE, verbose_name="Episódio Assistido"
+    )
+    watched_at = models.DateTimeField(auto_now=True, verbose_name="Última Visualização")
+
+    class Meta:
+        unique_together = ("user", "episode_watched")
+        ordering = ["-watched_at"]
+
+    def __str__(self):
+        return f"{self.user.username} assistiu {self.episode_watched.episode_title}"

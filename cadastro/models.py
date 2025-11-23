@@ -19,12 +19,11 @@ class CustomUser(AbstractUser):
         verbose_name_plural = "Usuarios"
 
 
-
-
 class CustomUserChangeForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ("full_name", "username", "email", "telefone", "profile_picture")
+
 
 class Codigo(models.Model):
     email = models.EmailField(max_length=200, null=True, blank=True)

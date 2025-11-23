@@ -55,5 +55,5 @@ def movie_rate_ninja(request: HttpRequest, movie_id: int, payload: RateIn):
 
     except ValidationError as e:
         return 400, {"message": str(e)}
-    except Exception as e:
+    except Exception:
         return 500, {"message": "Erro interno do servidor ao salvar avaliação."}

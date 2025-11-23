@@ -5,8 +5,83 @@
 {% block 'body' %}
 <br>
     <body class="bg-gray-100 min-h-screen">
-        <div class="mx-auto p-5 max-w-screen-xl"> 
+            <div class="mx-auto p-5 max-w-screen-xl">                 
+            <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
+                
+                <!-- historico de series -->
+                <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
+                    🎬 Historico de series
+                </div>
+                    
+                <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
+                        
+                    {% if movies_watched %}
+                        <div class="my-8">
+                                <h2 class="text-2xl font-bold mb-4">Seu Histórico Recente</h2>
+                            <div class="flex overflow-x-auto space-x-4 pb-4">
+                                    {% for movie in movies_watched %}
+                                    <div class="flex-shrink-0 w-32 sm:w-40 text-center">
+                                        <a href="{% url 'movie' id=movie.id %}" class="block group">
+                                            <img 
+                                                src="{{ movie.poster.url }}" 
+                                                alt="{{ movie.name_movie }}" 
+                                                class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                            >
+                                            <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
+                                                {{ movie.name_movie }}
+                                            </h3>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}   
+                </div>
+            </div>
+            <br>
+
+
+            <!-- historico de filmes -->
+            <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
+                
+                <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
+                    🎬 Historico de filmes
+                </div>
+                
+                <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
+                    
+                    {% if movies_watched %}
+                        <div class="my-8">
+                            <h2 class="text-2xl font-bold mb-4">Seu Histórico Recente</h2>
+                            <div class="flex overflow-x-auto space-x-4 pb-4">
+                                {% for movie in movies_watched %}
+                                <div class="flex-shrink-0 w-32 sm:w-40 text-center">
+                                    <a href="{% url 'movie' id=movie.id %}" class="block group">
+                                        <img 
+                                            src="{{ movie.poster.url }}" 
+                                            alt="{{ movie.name_movie }}" 
+                                            class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                        >
+                                        <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
+                                            {{ movie.name_movie }}
+                                        </h3>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    
+                </div>
+                
+            </div>
+            <br>
             
+            
+
+            <!-- recomendados -->
+
             <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
                 
                 <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
@@ -35,7 +110,34 @@
                 </div>
                 
             </div>
-        </div>
+            <br>
+
+            <!-- series -->
+            <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
+                    <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
+                        🎬 Séries Disponíveis
+                    </div>
+    
+                    <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
+                        {% for serie in series %}
+                            <div class="flex-shrink-0 w-32 sm:w-40 text-center">
+                                <a href="{% url 'serie' id=serie.id %}" class="block group">
+                                    
+                                    <img 
+                                        src="{{ serie.serie_poster.url }}" 
+                                        alt="{{ serie.name_serie }}" 
+                                        class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                    >
+                                    
+                                    <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
+                                        {{ serie.name_serie }}
+                                    </h3>
+                                </a>
+                            </div>
+                        {% endfor %} 
+                    </div>
+                </div>
+            </div>
     </body>
 {% endblock 'body' %}
 

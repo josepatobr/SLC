@@ -8,4 +8,3 @@ api = NinjaAPI()
 api.add_router("auth/", router_cadastro)
 api.add_router("home/", router_home)
 api.add_router("movies/", router_movies)
-
