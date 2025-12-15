@@ -26,6 +26,11 @@
                                                 src="{{ movie.poster.url }}" 
                                                 alt="{{ movie.name_movie }}" 
                                                 class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                                loading="lazy"
+                                                srcset="{{ movie.get_srcset_urls }}"
+                                                sizes="(max-width: 600px) 100vw, 
+                                                    (max-width: 1024px) 33vw, 
+                                                    25vw"
                                             >
                                             <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
                                                 {{ movie.name_movie }}
@@ -61,6 +66,11 @@
                                             src="{{ movie.poster.url }}" 
                                             alt="{{ movie.name_movie }}" 
                                             class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                            loading="lazy"
+                                            srcset="{{ movie.get_srcset_urls }}"
+                                            sizes="(max-width: 600px) 100vw, 
+                                                (max-width: 1024px) 33vw, 
+                                                25vw"
                                         >
                                         <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
                                             {{ movie.name_movie }}
@@ -72,16 +82,12 @@
                         </div>
                     {% endif %}
 
-                    
                 </div>
                 
             </div>
             <br>
-            
-            
 
             <!-- recomendados -->
-
             <div class="bg-white rounded-xl shadow-2xl p-4 space-y-4">
                 
                 <div class="text-2xl font-extrabold text-gray-800 border-b pb-2 border-gray-200">
@@ -92,14 +98,17 @@
                     
                     {% for recommended_movie in recommended_movies %}
                         <div class="flex-shrink-0 w-32 sm:w-40 text-center">
-                            <a href="{% url 'movie' id=recommended_movie.id %}" class="block group">
-                                
+                            <a href="{% url 'movie' id=recommended_movie.id %}" class="block group">        
                                 <img 
                                     src="{{ recommended_movie.poster.url }}" 
                                     alt="{{ recommended_movie.name_movie }}" 
                                     class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                    loading="lazy"
+                                    srcset="{{ movie.get_srcset_urls }}"
+                                    sizes="(max-width: 600px) 100vw, 
+                                        (max-width: 1024px) 33vw, 
+                                        25vw"
                                 >
-                                
                                 <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
                                     {{ recommended_movie.name_movie }}
                                 </h3>
@@ -122,13 +131,16 @@
                         {% for serie in series %}
                             <div class="flex-shrink-0 w-32 sm:w-40 text-center">
                                 <a href="{% url 'serie' id=serie.id %}" class="block group">
-                                    
                                     <img 
                                         src="{{ serie.serie_poster.url }}" 
                                         alt="{{ serie.name_serie }}" 
                                         class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                        loading="lazy"
+                                        srcset="{{ serie.get_srcset_urls }}"
+                                        sizes="(max-width: 600px) 100vw, 
+                                            (max-width: 1024px) 33vw, 
+                                            25vw"
                                     >
-                                    
                                     <h3 class="mt-2 text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600">
                                         {{ serie.name_serie }}
                                     </h3>

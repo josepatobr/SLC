@@ -2,7 +2,11 @@ from filmes.models import Movies, MoviesWatched, Serie, EpisodeWatched
 from django.shortcuts import render, get_object_or_404, redirect
 from cadastro.models import CustomUser, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
-
+from PIL import Image
+import os
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
 
 def home(request):
     if request.user.is_authenticated:
@@ -86,3 +90,30 @@ def profile_edit(request, id):
     else:
         form = CustomUserChangeForm(instance=user_to_edit)
     return render(request, "profile_edit.html", {"form": form, "user": user_to_edit})
+
+
+def resize_and_save_poster(original_file_path, base_filename, output_dir):
+    SIZES = [400, 800, 1200]
+    
+    try:
+        img = Image.open(original_file_path)
+    except FileNotFoundError:
+        print(f"ERRO: Arquivo original nao encontrado em {original_file_path}")
+        return {}
+
+    saved_paths = {}
+    
+    for size in SIZES:
+        width_percent = (size / float(img.size[0]))
+        new_height = int((float(img.size[1]) * float(width_percent)))
+        resized_img = img.resize((size, new_height), Image.LANCZOS)
+        new_filename = f"{base_filename}_{size}w.jpg"
+        save_path = os.path.join(output_dir, new_filename)
+        resized_img.save(save_path, format='JPEG', optimize=True)
+        saved_paths[f'{size}w'] = save_path
+        
+        print(f"Gerado: {save_path} ({size}w x {new_height}h)")
+
+    return saved_paths
+
+

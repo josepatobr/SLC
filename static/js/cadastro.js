@@ -1,3 +1,4 @@
+// sistema de menssagem
 function showMessage(msg, isSuccess = false) {
   erroMsg.textContent = msg;
   erroMsg.style.color = isSuccess ? "green" : "red";
@@ -5,36 +6,38 @@ function showMessage(msg, isSuccess = false) {
 
 function resetButton(btn) {
   btn.disabled = false;
-  btn.textContent = "Cadastrar"; }
+  btn.textContent = "Cadastrar"; 
+}
 
 
+// sistema de cadastro do google 
 function handleCredentialResponse(response){
   const jwt = response.credential;
-  console.log("Token jwt recebido", jwt);
+    console.log("Token jwt recebido", jwt);
 
-  fetch('http://localhost:8000/api/auth/login-google/',{ 
-  method: 'POST',
-  headers: {
-      'Content-Type':'application/json'
-  },
-  body: JSON.stringify({ token:jwt})
-  })
-  .then(res => {
-  if (!res.ok) {
-    throw new Error("Falha na autenticação com Google. Tente novamente.");
-  }
-  return res.json();
-  })
-  .then(data => {
-      console.log("Resposta do backend:", data);
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-      window.location.href = 'home/';
+    fetch('http://localhost:8000/api/auth/login-google/',{ 
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+    },
+      body: JSON.stringify({ token:jwt})
     })
-  .catch(err => {
-    console.error("Erro ao enviar token:", err);
-    showMessage(err.message || "Erro de conexão ao tentar login com Google."); 
-  });
+    .then(res => {
+    if (!res.ok) {
+      throw new Error("Falha na autenticação com Google. Tente novamente.");
+    }
+    return res.json();
+    })
+    .then(data => {
+        console.log("Resposta do backend:", data);
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        window.location.href = '/home/';
+      })
+    .catch(err => {
+      console.error("Erro ao enviar token:", err);
+      showMessage(err.message || "Erro de conexão ao tentar login com Google."); 
+    });
 }
 
 
