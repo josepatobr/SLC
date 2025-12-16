@@ -4,9 +4,7 @@ from cadastro.models import CustomUser, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
 from PIL import Image
 import os
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.conf import settings
+
 
 def home(request):
     if request.user.is_authenticated:
