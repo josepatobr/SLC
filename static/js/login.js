@@ -37,6 +37,7 @@ function handleCredentialResponse(response){
         console.log("Resposta do backend:", data);
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("user_email", data.usuario);
         window.location.href = '/home/';
     })
     .catch(err => {
@@ -45,7 +46,6 @@ function handleCredentialResponse(response){
 }
     
 //sistema de trocas
-
 function changeOption() {
     if (!authModeSelect) return;
 

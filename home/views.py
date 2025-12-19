@@ -92,7 +92,7 @@ def profile_edit(request, id):
 
 def resize_and_save_poster(original_file_path, base_filename, output_dir):
     SIZES = [400, 800, 1200]
-    
+
     try:
         img = Image.open(original_file_path)
     except FileNotFoundError:
@@ -100,18 +100,16 @@ def resize_and_save_poster(original_file_path, base_filename, output_dir):
         return {}
 
     saved_paths = {}
-    
+
     for size in SIZES:
-        width_percent = (size / float(img.size[0]))
+        width_percent = size / float(img.size[0])
         new_height = int((float(img.size[1]) * float(width_percent)))
         resized_img = img.resize((size, new_height), Image.LANCZOS)
         new_filename = f"{base_filename}_{size}w.jpg"
         save_path = os.path.join(output_dir, new_filename)
-        resized_img.save(save_path, format='JPEG', optimize=True)
-        saved_paths[f'{size}w'] = save_path
-        
+        resized_img.save(save_path, format="JPEG", optimize=True)
+        saved_paths[f"{size}w"] = save_path
+
         print(f"Gerado: {save_path} ({size}w x {new_height}h)")
 
     return saved_paths
-
-

@@ -30,22 +30,17 @@ class Movies(models.Model):
     poster = models.ImageField(upload_to="posters", blank=False, null=False)
     release_date = models.DateField(blank=True, null=True)
     watch_count = models.PositiveIntegerField(default=0)
-    poster_400w = models.CharField(max_length=255, blank=True, null=True) 
+    poster_400w = models.CharField(max_length=255, blank=True, null=True)
     poster_800w = models.CharField(max_length=255, blank=True, null=True)
     poster_1200w = models.CharField(max_length=255, blank=True, null=True)
-
- 
 
     def get_srcset_urls(self):
         if not self.poster_400w or not self.poster_800w or not self.poster_1200w:
             return ""
-            
+
         return (
-            f"{self.poster_400w} 400w,"
-            f"{self.poster_800w} 800w,"
-            f"{self.poster_1200w} 1200w"
+            f"{self.poster_400w} 400w,{self.poster_800w} 800w,{self.poster_1200w} 1200w"
         )
-    
 
     def __str__(self):
         return self.name_movie
@@ -99,22 +94,21 @@ class Serie(models.Model):
     serie_poster = models.ImageField(
         upload_to="series_posters", blank=False, null=False
     )
-    poster_400w = models.CharField(max_length=255, blank=True, null=True) 
+    poster_400w = models.CharField(max_length=255, blank=True, null=True)
     poster_800w = models.CharField(max_length=255, blank=True, null=True)
     poster_1200w = models.CharField(max_length=255, blank=True, null=True)
-
- 
 
     def get_srcset_urls(self):
         if not self.poster_400w or not self.poster_800w or not self.poster_1200w:
             return ""
-            
+
         return (
             f"{self.poster_400w} 400w, "
             f"{self.poster_800w} 800w, "
             f"{self.poster_1200w} 1200w"
         )
-    
+
+
 class Season(models.Model):
     serie = models.ForeignKey(Serie, on_delete=models.CASCADE, related_name="seasons")
     season_number = models.PositiveIntegerField(default=1, unique=True)

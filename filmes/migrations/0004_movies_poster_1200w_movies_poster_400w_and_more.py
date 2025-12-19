@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('filmes', '0003_season_episode_serie_season_serie_episodewatched_and_more'),
+        ("filmes", "0003_season_episode_serie_season_serie_episodewatched_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='movies',
-            name='poster_1200w',
+            model_name="movies",
+            name="poster_1200w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='movies',
-            name='poster_400w',
+            model_name="movies",
+            name="poster_400w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='movies',
-            name='poster_800w',
+            model_name="movies",
+            name="poster_800w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='serie',
-            name='poster_1200w',
+            model_name="serie",
+            name="poster_1200w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='serie',
-            name='poster_400w',
+            model_name="serie",
+            name="poster_400w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='serie',
-            name='poster_800w',
+            model_name="serie",
+            name="poster_800w",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]
