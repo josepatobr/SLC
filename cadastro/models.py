@@ -5,7 +5,7 @@ from django import forms
 
 
 class CustomUser(AbstractUser):
-    full_name = models.CharField(max_length=200, unique=False, null=False, blank=False)
+    full_name = models.CharField(max_length=200, unique=False, null=True, blank=True)
     telefone = models.CharField(max_length=15, null=True, blank=True)
     profile_picture = models.ImageField(
         upload_to="profile_picture", blank=True, null=True
