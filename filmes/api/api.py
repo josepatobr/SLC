@@ -2,14 +2,14 @@ from ninja import Router
 from django.http import StreamingHttpResponse, HttpResponse
 from django.conf import settings
 import os
-
+from django.http import FileResponse
 router_movies = Router()
 CHUNK_SIZE = 8192
 
 
-@router_movies.get("video/")
-def stream_video(request):
-    path = os.path.join(settings.BASE_DIR, "media", "video.mp4")
+@router_movies.get("video/{id}")
+def stream_video(request, id: int):
+    path = os.path.join(settings.BASE_DIR, "media", f"video_{id}.mp4")
 
     if not os.path.exists(path):
         return HttpResponse("Arquivo não encontrado.", status=404)
@@ -24,6 +24,9 @@ def stream_video(request):
             end = int(end_str) if end_str else file_size - 1
         except ValueError:
             return HttpResponse("Range Header inválido.", status=400)
+        
+        if start > end:
+            return HttpResponse("Range inválido: start maior que end.", status=416)
 
         start = max(0, start)
         end = min(file_size - 1, end)
@@ -49,7 +52,7 @@ def stream_video(request):
         response["Content-Length"] = str(length)
         return response
 
-    response = HttpResponse(open(path, "rb"), content_type="video/mp4", status=200)
+    response = FileResponse(open(path, "rb"), content_type="video/mp4", status=200)
     response["Content-Length"] = str(file_size)
     response["Accept-Ranges"] = "bytes"
     return response

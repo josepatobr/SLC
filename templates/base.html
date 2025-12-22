@@ -13,20 +13,21 @@
     <nav class="bg-white shadow-xl">
         <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center">
             <div class="flex justify-between h-18">
-            <!-- opçoes -->
-            <div class="hidden sm:flex sm:items-center sm:space-x-6"> 
-                <a id="Link-home" href="/home/" class="text-gray-700 hover:text-blue-600">Home</a>
-                {% if not user.is_authenticated %}
-                    <a id="Link-cadastro" href="/auth/cadastro/" class="text-gray-700 hover:text-blue-600">Cadastro</a>
-                    <a id="Link-login" href="/auth/login/" class="text-gray-700 hover:text-blue-600">Login</a>
-                {% endif %}
+                <!-- opçoes -->
+                <div class="hidden sm:flex sm:items-center sm:space-x-6"> 
+                    <a id="Link-home" href="/home/" class="text-gray-700 hover:text-blue-600">Home</a>
+                    {% if not user.is_authenticated %}
+                        <a id="Link-cadastro" href="/auth/cadastro/" class="text-gray-700 hover:text-blue-600">Cadastro</a>
+                        <a id="Link-login" href="/auth/login/" class="text-gray-700 hover:text-blue-600">Login</a>
+                    {% endif %}
 
-                {% if user.is_authenticated %}
-                    <a href="profile/" class="text-gray-700 hover:text-blue-600">Login</a>
-                    <form action="{% url 'logout' %}" method="post">{% csrf_token %}
-                        <button type="submit">Logout</button>
-                    </form>             
-                {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile' id=user.id %}" class="text-gray-700 hover:text-blue-600">perfil</a>
+                        <form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>             
+                    {% endif %}
+                </div>
             </div>
         </div>    
     </nav>
