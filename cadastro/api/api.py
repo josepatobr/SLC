@@ -150,7 +150,7 @@ def enviar_codigo(request, payload: CodigoRequest):
     return {"status": "Código enviado com sucesso"}
 
 
-@router_cadastro.post("login-google/")
+@router_cadastro.post("login-google/", auth=None)
 def login_google(request, payload: GoogleTokenSchema):
     if request.user and request.user.is_authenticated:
         return redirect(resolve_url("home"))
