@@ -3,13 +3,15 @@ from django.http import StreamingHttpResponse, HttpResponse
 from django.conf import settings
 import os
 from django.http import FileResponse
+
 router_movies = Router()
 CHUNK_SIZE = 8192
 
 
 @router_movies.get("video/{id}")
 def stream_video(request, id: int):
-    path = os.path.join(settings.BASE_DIR, "media", f"video_{id}.mp4")
+    
+    path = os.path.join(settings.MEDIA_ROOT, f"video_{id}.mp4")
 
     if not os.path.exists(path):
         return HttpResponse("Arquivo não encontrado.", status=404)
