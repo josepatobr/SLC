@@ -10,7 +10,6 @@ CHUNK_SIZE = 8192
 
 @router_movies.get("video/{id}")
 def stream_video(request, id: int):
-    
     path = os.path.join(settings.MEDIA_ROOT, f"video_{id}.mp4")
 
     if not os.path.exists(path):
@@ -26,7 +25,7 @@ def stream_video(request, id: int):
             end = int(end_str) if end_str else file_size - 1
         except ValueError:
             return HttpResponse("Range Header inválido.", status=400)
-        
+
         if start > end:
             return HttpResponse("Range inválido: start maior que end.", status=416)
 

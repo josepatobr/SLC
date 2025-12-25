@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('cadastro', '0001_initial'),
+        ("cadastro", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='full_name',
+            model_name="customuser",
+            name="full_name",
             field=models.CharField(blank=True, max_length=200, null=True),
         ),
     ]

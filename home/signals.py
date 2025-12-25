@@ -5,7 +5,7 @@ from .views import resize_and_save_poster
 import os
 
 
-@receiver(post_save, sender=[Serie, Movies])
+@receiver(post_save, sender=(Serie, Movies))
 def generate_responsive_posters(sender, instance, created, **kwargs):
     if not created:
         return
