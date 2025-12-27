@@ -7,6 +7,6 @@ wheels/
 *.egg-info
 .env
 node_modules
-
+media
 # Virtual environments
 .venv
