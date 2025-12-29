@@ -21,12 +21,10 @@
                         <div class="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
                             <video 
                                 id="Video" 
-                                data-movie-id="{{ movie.id }}" 
-                                data-csrf-token="{{ csrf_token }}" 
                                 class="w-full h-full object-cover"
                                 controls
                             >
-                                <source src="{{ movie.video.url }}" type="video/mp4">
+                                <source src="/api/movies/video/{{ movie.id }}" type="video/mp4">
                                 Seu navegador não suporta vídeo.
                             </video>
                         </div>
