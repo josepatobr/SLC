@@ -7,9 +7,9 @@
 
 {% block 'body' %}
     <main class="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
-        <div class="max-w-4xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-10">
+        <div class="max-w-8xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-6 md:p-10">
 
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-black text-center mb-6">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white text-center mb-6">
                 {{ movie.name_movie }}
             </h1>
             
@@ -37,17 +37,34 @@
                     {% endif %}
                     
                     <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
-                        <h2 class="text-2xl font-semibold text-gray-400 mb-2 border-b border-gray-600 pb-1">Descrição</h2>
-                        <div class="text-black leading-relaxed">{{ movie.description }}</div> 
+                        <h2 class="text-2xl font-semibold text-white mb-2 border-b border-gray-600 pb-1">Descrição</h2>
+                        <div class="text-white leading-relaxed">{{ movie.description }}</div> 
                     </div>
 
                 </div>
 
                 <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-xl space-y-4">
+                        <div class="border-b border-gray-600 pb-2">
+                            <strong class="block text-lg text-white mb-1">Data de Lançamento</strong> 
+                            <span class="text-white">{{ movie.release_date }}</span>
+                        </div>
+                        
+                        <div>
+                            <strong class="block text-lg text-white mb-1">Gêneros</strong>
+                            <div class="flex flex-wrap gap-2">
+                                {% for genero in movie.gender.all %}
+                                    <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                        {{ genero.gender }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center">
-                        <h2 class="text-xl font-semibold mb-3 text-black">Sua Avaliação</h2>
-                        <form method="POST" action="{% url 'api_rate_movie' movie.id %}" id="ratingForm">
+                        <h2 class="text-xl font-semibold mb-3 text-white">Sua Avaliação</h2>                        
+                        <form id="ratingForm">
                             {% csrf_token %}
                             <div class="flex flex-row-reverse rating justify-center">
                                 
@@ -67,28 +84,11 @@
                                 <label for="star1" class="text-4xl text-gray-400 hover:text-yellow-500 cursor-pointer star-label" title="1 estrela">&#9733;</label>
                                 
                             </div>
-                            <p class="text-sm text-gray-400 mt-2" id="ratingMessage">Clique em uma estrela para avaliar.</p>
+                            <p class="text-sm text-white mt-2" id="ratingMessage">Clique em uma estrela para avaliar.</p>
                         </form>
                     </div>
 
-                    <div class="bg-gray-700 p-6 rounded-lg shadow-xl space-y-4">
-                        <div class="border-b border-gray-600 pb-2">
-                            <strong class="block text-lg text-black mb-1">Data de Lançamento</strong> 
-                            <span class="text-black">{{ movie.release_date }}</span>
-                        </div>
-                        
-                        <div>
-                            <strong class="block text-lg text-black mb-1">Gêneros</strong>
-                            <div class="flex flex-wrap gap-2">
-                                {% for genero in movie.gender.all %}
-                                    <span class="bg-blue-600 text-black text-xs font-semibold px-3 py-1 rounded-full">
-                                        {{ genero.gender }}
-                                    </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
+         
                 </div>
             </div>
 
