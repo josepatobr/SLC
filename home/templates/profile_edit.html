@@ -16,7 +16,7 @@
 
             {% for field in form %}
                 <div class="mb-4">
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-white">{{ field.label }}</label>
+                    <label for="{{ field.id_for_label }}" class="bg-gray-700 text-decoration w-full block text-sm font-medium text-white">{{ field.label }}:</label>
                     {{ field }}
                     {% if field.errors %}
                         <p class="text-red-500 text-xs italic">{{ field.errors }}</p>
