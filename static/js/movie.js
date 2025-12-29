@@ -83,8 +83,6 @@ if (video) {
 }
 
 
-
-
 // sistema de estrela 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('ratingForm');

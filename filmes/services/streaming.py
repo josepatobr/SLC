@@ -4,23 +4,18 @@ import os
 import re
 from collections.abc import Generator
 
-from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
 
 logger = logging.getLogger(__name__)
 
 
 class RangeFileWrapper:
-    """
-    Wrapper to read a file in chunks, starting from a specific offset.
-    Useful for supporting HTTP Range requests for local files.
-    """
-
     def __init__(self, file_obj, offset=0, length=None, chunk_size=8192):
         self.file_obj = file_obj
         self.offset = offset
         self.length = length
         self.chunk_size = chunk_size
+        
         if hasattr(self.file_obj, "seek"):
             self.file_obj.seek(offset)
         if length is not None:
@@ -30,7 +25,6 @@ class RangeFileWrapper:
             self.remaining = self.file_obj.tell() - offset
             self.file_obj.seek(offset)
         else:
-            # Fallback if seek/tell not supported (should not happen for local files)
             self.remaining = float("inf")
 
     def __iter__(self) -> Generator[bytes]:
@@ -47,22 +41,13 @@ class RangeFileWrapper:
 
 
 def get_video_streaming_response(request, file_field):
-    """
-    Generates a response for video streaming.
-    Streams the file with Range Request support.
-    """
     if not file_field:
         return None
-
-    # Local File Streaming Logic
     try:
-        # Try to get the file size.
         size = file_field.size
-    except Exception:  # noqa: BLE001
-        # If we can't even get the size, we can't stream properly with ranges
+    except Exception:
         return None
 
-    # Determine Content-Type from the file name
     content_type, _ = mimetypes.guess_type(file_field.name)
     content_type = content_type or "video/mp4"
 
