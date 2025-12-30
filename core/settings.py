@@ -29,9 +29,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "cadastro",
     "home",
+    "users",
     "filmes",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount",
+
+
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -41,6 +47,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+
 ]
 
 SITE_ID = 1
@@ -131,7 +139,6 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTH_USER_MODEL = "cadastro.CustomUser"
 
 # imagens
 MEDIA_URL = "/media/"
@@ -156,7 +163,26 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 # TOKENS
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-SMS_KEY = os.getenv("SMS_KEY")
 
 # LOGOUT
 LOGOUT_REDIRECT_URL = "/auth/login/"
+
+AUTH_USER_MODEL = "users.CustomUser"
+
+# django-allauth
+# ------------------------------------------------------------------------------
+# https://docs.allauth.org/en/latest/account/configuration.html
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_PASSWORD_RESET_BY_CODE_ENABLED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = True
+ACCOUNT_EMAIL_VERIFICATION_SUPPORTS_RESEND = True
+ACCOUNT_EMAIL_NOTIFICATIONS = True
+ACCOUNT_CHANGE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+USERSESSIONS_TRACK_ACTIVITY = True
+
+
