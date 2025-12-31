@@ -1,5 +1,5 @@
 from filmes.models import Movies, MoviesWatched, Serie, EpisodeWatched
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from users.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from PIL import Image
