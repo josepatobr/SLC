@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     "users",
     "filmes",
 ]
+
+LOGIN_URL = "/accounts/login"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
