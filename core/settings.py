@@ -52,7 +52,8 @@ MIDDLEWARE = [
 ]
 
 
-LOGOUT_REDIRECT_URL = "/auth/login/"
+LOGOUT_REDIRECT_URL = "/accounts/login"
+LOGIN_REDIRECT_URL = "home"
 AUTH_USER_MODEL = "users.CustomUser"
 AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
 
