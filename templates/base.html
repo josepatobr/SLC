@@ -17,8 +17,8 @@
                 <div class="hidden sm:flex sm:items-center sm:space-x-6"> 
                     <a id="Link-home" href="/home/" class="text-white hover:text-blue-600">Home</a>
                     {% if not user.is_authenticated %}
-                        <a id="Link-cadastro" href="/auth/cadastro/" class="text-white hover:text-blue-600">Cadastro</a>
-                        <a id="Link-login" href="/auth/login/" class="text-white hover:text-blue-600">Login</a>
+                        <a id="Link-cadastro" href="{{ signup_url }}"class="text-white hover:text-blue-600">Cadastro</a>
+                        <a id="Link-login" href="/accounts/login/" class="text-white hover:text-blue-600">Login</a>
                     {% endif %}
 
                     {% if user.is_authenticated %}
