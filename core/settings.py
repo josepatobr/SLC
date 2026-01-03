@@ -171,3 +171,6 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
+
+
+ALLOWED_HOSTS = ['slc.squareweb.app', 'localhost', '127.0.0.1']
