@@ -18,6 +18,7 @@ SECRET_KEY = "django-insecure-&*2t847m5yaov3)ops+_t@%n-s2#p3m-_j44pew^=n0q2*3gwp
 DEBUG = True
 
 ALLOWED_HOSTS = ['slc.squareweb.app', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://slc.squareweb.app']
 
 # Application definition
 
