@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "home",
     "users",
     "filmes",
-    "upload"
 ]
 
 LOGIN_URL = "/accounts/login"
