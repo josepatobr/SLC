@@ -188,7 +188,6 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_S3_MAX_MEMORY_SIZE = os.getenv(
     "DJANGO_AWS_S3_MAX_MEMORY_SIZE",
-    cast=int,
     default=100_000_000,
 )
 AWS_S3_REGION_NAME = os.getenv("DJANGO_AWS_S3_REGION_NAME", default=None)
