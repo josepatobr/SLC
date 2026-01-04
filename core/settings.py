@@ -17,8 +17,7 @@ SECRET_KEY = "django-insecure-&*2t847m5yaov3)ops+_t@%n-s2#p3m-_j44pew^=n0q2*3gwp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['slc.squareweb.app', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -174,4 +173,3 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
 
-ALLOWED_HOSTS = ['slc.squareweb.app', 'localhost', '127.0.0.1']
