@@ -32,4 +32,15 @@ services:
       - .:/app
     command: sh -c "npm install && npm run dev"
 
-      
+
+  volumes:
+    postgres_data: {}
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:5432
