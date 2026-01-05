@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "home",
     "users",
     "filmes",
+    "anymail",
 ]
 
 LOGIN_URL = "/accounts/login"
@@ -132,14 +133,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# email
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-
+EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+ANYMAIL = {
+    "BREVO_API_KEY": os.getenv("BREVO_API_KEY"),
+    "BREVO_API_URL": os.getenv("BREVO_API_URL", default="https://api.brevo.com/v3/"),
+}
 
 # CELERY
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")

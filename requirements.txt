@@ -12,3 +12,4 @@ uvicorn>=0.38.0
 whitenoise==6.8.2
 django-storages[s3]>=1.14.6
 psycopg[binary]==3.3.2
+django-anymail[brevo]==14.0
