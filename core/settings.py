@@ -138,6 +138,15 @@ ANYMAIL = {
     "BREVO_API_KEY": os.getenv("BREVO_API_KEY"),
     "BREVO_API_URL": os.getenv("BREVO_API_URL", default="https://api.brevo.com/v3/"),
 }
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DJANGO_DEFAULT_FROM_EMAIL",
+    default="SLC <noreply@slc.com>",
+)
+SERVER_EMAIL = os.getenv("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+EMAIL_SUBJECT_PREFIX = os.getenv(
+    "DJANGO_EMAIL_SUBJECT_PREFIX",
+    default="[SLC] ",
+)
 
 # CELERY
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
