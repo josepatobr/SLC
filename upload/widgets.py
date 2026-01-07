@@ -27,11 +27,16 @@ class S3AdminFileWidget(ClearableFileInput):
     template_name = "upload/s3_file_input.html"
 
     class Media:
-        js = ("https://unpkg.com/filepond/dist/filepond.min.js",)
+        js = (
+            "https://unpkg.com/filepond@4.32.11/dist/filepond.js",
+            "js/filepond.js",
+        )
         css = {
-                "all": ("https://unpkg.com/filepond/dist/filepond.css",
-                )
-            }
+            "all": (
+                "https://unpkg.com/filepond@4.32.11/dist/filepond.css",
+                "css/filepond.css",
+            )
+        }
 
     def build_attrs(self, base_attrs, extra_attrs=None):
         attrs = super().build_attrs(base_attrs, extra_attrs)
@@ -70,4 +75,3 @@ class S3AdminFileWidget(ClearableFileInput):
         ):
             return FILE_INPUT_CONTRADICTION if upload else False
         return upload
-

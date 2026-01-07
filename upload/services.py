@@ -39,35 +39,17 @@ class TransferredParts:
 
 class S3MultipartManager:
     _url_expiration = timedelta(hours=24)
-    part_size: ClassVar[int] = 64 * 1024 * 1024 
+    part_size: ClassVar[int] = 64 * 1024 * 1024
 
     def __init__(self):
-        default_s3_client_kwargs = {
-            "aws_access_key_id": settings.AWS_ACCESS_KEY_ID,
-            "aws_secret_access_key": settings.AWS_SECRET_ACCESS_KEY,
-            "region_name": settings.AWS_S3_REGION_NAME,
-            "config": Config(signature_version="s3v4"),
-        }
         self.client = boto3.client(
             "s3",
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME,
+            config=Config(signature_version="s3v4"),
             endpoint_url=settings.AWS_S3_ENDPOINT_URL,
-            **default_s3_client_kwargs,
         )
-
-        signing_endpoint = getattr(
-            settings,
-            "AWS_S3_PUBLIC_ENDPOINT_URL",
-            settings.AWS_S3_ENDPOINT_URL,
-        )
-
-        if signing_endpoint != settings.AWS_S3_ENDPOINT_URL:
-            self.signing_client = boto3.client(
-                "s3",
-                endpoint_url=signing_endpoint,
-                **default_s3_client_kwargs,
-            )
-        else:
-            self.signing_client = self.client
 
     def initialize_upload(
         self,
@@ -85,7 +67,7 @@ class S3MultipartManager:
 
         parts = []
         for part_number, part_size in self._iter_part_sizes(file_size):
-            upload_url = self.signing_client.generate_presigned_url(
+            upload_url = self.client.generate_presigned_url(
                 ClientMethod="upload_part",
                 Params={
                     "Bucket": bucket_name,
