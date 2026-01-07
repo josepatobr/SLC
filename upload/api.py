@@ -53,11 +53,13 @@ class FinalizeSchema(Schema):
     upload_signature: str
 
 
-@router_upload.post("/initialize", response=InitResponseSchema, url_name="upload_initialize")
+@router_upload.post(
+    "/initialize", response=InitResponseSchema, url_name="upload_initialize"
+)
 def initialize_upload(request, payload: InitUploadSchema):
     field = get_field(payload.field_id)
     instance = None
-    bucket_name = settings.AWS_PRIVATE_STORAGE_BUCKET_NAME
+    bucket_name = settings.AWS_STORAGE_BUCKET_NAME
 
     if field:
         if hasattr(field.storage, "bucket_name"):
@@ -110,7 +112,7 @@ def complete_upload(request, payload: CompleteUploadSchema):
     object_key = sig_data["object_key"]
     field_id = sig_data.get("field_id")
 
-    bucket_name = settings.AWS_PRIVATE_STORAGE_BUCKET_NAME
+    bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     if field_id:
         field = get_field(field_id)
         if field and hasattr(field.storage, "bucket_name"):
@@ -132,7 +134,7 @@ def finalize_upload(request, payload: FinalizeSchema):
     object_key = sig_data["object_key"]
     field_id = sig_data.get("field_id")
 
-    bucket_name = settings.AWS_PRIVATE_STORAGE_BUCKET_NAME
+    bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     if field_id:
         field = get_field(field_id)
         if field and hasattr(field.storage, "bucket_name"):

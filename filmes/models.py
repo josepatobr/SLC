@@ -36,7 +36,12 @@ class Gender(models.Model):
 
 
 class Movies(models.Model):
-    video = S3FileField(upload_to=path_movie_video, null=True, blank=True)
+    video = S3FileField(
+        upload_to=path_movie_video,
+        null=True,
+        blank=True,
+        max_length=500,
+    )
     name_movie = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=1000, blank=False, null=False)
     gender = models.ManyToManyField(
@@ -143,7 +148,7 @@ class Episode(models.Model):
     episode_number = models.PositiveIntegerField(default=1)
     episode_title = models.CharField(max_length=200)
     episode_video = S3FileField(
-        upload_to=path_episode_video, null=False, blank=False
+        upload_to=path_episode_video, null=False, blank=False, max_length=500
     )
 
     class Meta:
