@@ -3,6 +3,7 @@ from slugify import slugify
 from users.models import CustomUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 import os
+from upload.fields import S3FileField
 
 
 def path_movie_video(instance, filename):
@@ -35,7 +36,7 @@ class Gender(models.Model):
 
 
 class Movies(models.Model):
-    video = models.FileField(upload_to=path_movie_video, null=True, blank=True)
+    video = S3FileField(upload_to=path_movie_video, null=True, blank=True)
     name_movie = models.CharField(max_length=100, blank=False, null=False)
     description = models.CharField(max_length=1000, blank=False, null=False)
     gender = models.ManyToManyField(
@@ -141,7 +142,7 @@ class Episode(models.Model):
     )
     episode_number = models.PositiveIntegerField(default=1)
     episode_title = models.CharField(max_length=200)
-    episode_video = models.FileField(
+    episode_video = S3FileField(
         upload_to=path_episode_video, null=False, blank=False
     )
 
