@@ -3,6 +3,7 @@ from django.db import models
 from .managers import UserManager
 from typing import ClassVar
 
+
 class CustomUser(AbstractUser):
     username = None
     full_name = models.CharField(max_length=200, unique=False, null=True, blank=True)
@@ -17,4 +18,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return str(self.username) if self.username else str(self.email)
-    

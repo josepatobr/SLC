@@ -76,7 +76,8 @@ def profile(request, id):
     user = CustomUser.objects.get(id=id)
     return render(request, "profile.html", {"user": user})
 
-'''
+
+"""
 def profile_edit(request, id):
     user_to_edit = get_object_or_404(CustomUser, id=id)
 
@@ -88,7 +89,8 @@ def profile_edit(request, id):
     else:
         form = CustomUserChangeForm(instance=user_to_edit)
     return render(request, "profile_edit.html", {"form": form, "user": user_to_edit})
-'''
+"""
+
 
 def resize_and_save_poster(original_file_path, base_filename, output_dir):
     SIZES = [400, 800, 1200]

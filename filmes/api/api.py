@@ -7,13 +7,12 @@ CHUNK_SIZE = 8192
 
 
 @router_movies.get("video/{id}", url_name="stream-video")
-def stream_video(request, id: int): 
+def stream_video(request, id: int):
     video = None
     if movie := Movies.objects.filter(id=id).first():
         video = movie.video
     elif episode := Episode.objects.filter(id=id).first():
         video = episode.video
-
 
     else:
         return 404, {"detail": "Movie or episode not found."}

@@ -15,7 +15,7 @@ class RangeFileWrapper:
         self.offset = offset
         self.length = length
         self.chunk_size = chunk_size
-        
+
         if hasattr(self.file_obj, "seek"):
             self.file_obj.seek(offset)
         if length is not None:
