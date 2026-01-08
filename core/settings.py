@@ -196,7 +196,7 @@ STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
-            "location": "media",
+            "location": "",
             "file_overwrite": False,
         },
     },
