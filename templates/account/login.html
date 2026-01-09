@@ -14,7 +14,7 @@
                     Login
                 </div> 
             
-                <div class="text-white p-3">
+                <div class="text-white p-2 ">
                     {% url 'account_login' as login_url %}
                     {% element form form=form method="post" action=login_url tags="entrance,login" %}
                         {% slot body %}
@@ -46,8 +46,10 @@
                             {% endif %}
                         {% endelement %}
                     {% endif %}
+                    
                 </div>
-                <div class="text-center text-white [&>p]:hidden">
+                
+                <div class="text-center text-white">
                     {% if SOCIALACCOUNT_ENABLED %}
                         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
                     {% endif %}

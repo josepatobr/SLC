@@ -54,7 +54,10 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
-
+'''    "core.middleware.AutoLoginMiddleware",
+'''
+SESSION_COOKIE_AGE = 31536000 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  
 
 LOGOUT_REDIRECT_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "home"
@@ -155,8 +158,6 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 
 # django-allauth
-# ------------------------------------------------------------------------------
-# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
