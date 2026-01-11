@@ -19,7 +19,8 @@ dependencies = [
     "requests>=2.32.5",
     "uvicorn>=0.38.0",
     "whitenoise>=6.11.0",
-    "django-anymail[brevo]==14.0"
+    "django-anymail[brevo]==14.0",
+    "ruff>=0.14.1",
 ]
 
 [dependency-groups]

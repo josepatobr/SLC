@@ -7,4 +7,3 @@ api = NinjaAPI()
 api.add_router("home/", router_home)
 api.add_router("movies/", router_movies)
 api.add_router("upload/", router_upload)
-

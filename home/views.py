@@ -1,7 +1,5 @@
 from filmes.models import Movies, MoviesWatched, Serie, EpisodeWatched
-from django.shortcuts import render, get_object_or_404
-from users.models import CustomUser
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from PIL import Image
 import os
 
@@ -42,54 +40,6 @@ def home(request):
             "action_movies": action_movies,
         },
     )
-
-
-@login_required
-def movie(request, id):
-    movie = get_object_or_404(Movies, id=id)
-
-    return render(
-        request,
-        "movie.html",
-        {
-            "movie": movie,
-        },
-    )
-
-
-@login_required
-def serie(request, id):
-    serie = get_object_or_404(Serie, id=id)
-    seasons = serie.seasons.all().prefetch_related("episodes")
-
-    return render(
-        request,
-        "serie.html",
-        {
-            "serie": serie,
-            "seasons": seasons,
-        },
-    )
-
-
-def profile(request, id):
-    user = CustomUser.objects.get(id=id)
-    return render(request, "profile.html", {"user": user})
-
-
-"""
-def profile_edit(request, id):
-    user_to_edit = get_object_or_404(CustomUser, id=id)
-
-    if request.method == "POST":
-        form = CustomUserChangeForm(request.POST, request.FILES, instance=user_to_edit)
-        if form.is_valid():
-            form.save()
-            return redirect("profile", id=user_to_edit.id)
-    else:
-        form = CustomUserChangeForm(instance=user_to_edit)
-    return render(request, "profile_edit.html", {"form": form, "user": user_to_edit})
-"""
 
 
 def resize_and_save_poster(original_file_path, base_filename, output_dir):

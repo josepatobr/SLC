@@ -11,11 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class RangeFileWrapper:
-    """
-    Wrapper to read a file in chunks, starting from a specific offset.
-    Useful for supporting HTTP Range requests for local files.
-    """
-
     def __init__(self, file_obj, offset=0, length=None, chunk_size=8192):
         self.file_obj = file_obj
         self.offset = offset
@@ -30,7 +25,6 @@ class RangeFileWrapper:
             self.remaining = self.file_obj.tell() - offset
             self.file_obj.seek(offset)
         else:
-            # Fallback if seek/tell not supported (should not happen for local files)
             self.remaining = float("inf")
 
     def __iter__(self) -> Generator[bytes]:
@@ -47,25 +41,15 @@ class RangeFileWrapper:
 
 
 def get_video_streaming_response(request, file_field):
-    """
-    Generates a response for video streaming.
-    - If S3/Cloud Storage: Redirects to the presigned/public URL.
-    - If Local Storage: Streams the file with Range Request support.
-    """
     if not file_field:
         return None
 
-    # 1. Try to redirect if it's a cloud storage URL (S3, MinIO, R2)
     try:
-        # Try to generate a presigned URL with expiration (e.g., 3 hours = 10800s)
         url = file_field.storage.url(file_field.name, expire=10800)
 
-        # If it's a remote URL, let the storage service
-        # handle the streaming/range requests
         if url and url.startswith(("http:", "https:")):
             return HttpResponseRedirect(url)
     except TypeError:
-        # Fallback for storages that don't support 'expire' (e.g., FileSystemStorage)
         try:
             url = file_field.url
             if url and url.startswith(("http:", "https:")):
@@ -73,23 +57,15 @@ def get_video_streaming_response(request, file_field):
         except Exception as e:
             logger.exception("Error accessing file_field.url", exc_info=e)
     except Exception as e:
-        # If accessing .url fails or isn't useful, proceed to local handling
         logger.exception(
             "Error accessing file_field.url for remote storage",
             exc_info=e,
         )
-
-    # 2. Local File Streaming Logic
     try:
-        # Try to get the file size.
-        # file_field.size works for both local and some remote storages,
-        # but accessing .path is restricted to local.
         size = file_field.size
-    except Exception:  # noqa: BLE001
-        # If we can't even get the size, we can't stream properly with ranges
+    except Exception:
         return None
 
-    # Determine Content-Type from the file name
     content_type, _ = mimetypes.guess_type(file_field.name)
     content_type = content_type or "video/mp4"
 

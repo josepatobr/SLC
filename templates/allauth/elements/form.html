@@ -1,0 +1,13 @@
+{% load allauth %}
+<form class="{% block form_class %}{% if not attrs.no_visible_fields %}card{% endif %}{% endblock %}"
+      method="{{ attrs.method }}"
+      {% if attrs.action %}action="{{ attrs.action }}"{% endif %}>
+    {% if not attrs.no_visible_fields %}<div class="card-body">{% endif %}
+        {% slot body %}
+        {% endslot %}
+        {% if not attrs.no_visible_fields %}</div>{% endif %}
+    {% if not attrs.no_visible_fields %}<div class="card-footer">{% endif %}
+        {% slot actions %}
+        {% endslot %}
+        {% if not attrs.no_visible_fields %}</div>{% endif %}
+</form>

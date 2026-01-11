@@ -54,10 +54,10 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
-'''    "core.middleware.AutoLoginMiddleware",
-'''
-SESSION_COOKIE_AGE = 31536000 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False  
+"""    "core.middleware.AutoLoginMiddleware",
+"""
+SESSION_COOKIE_AGE = 31536000
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 LOGOUT_REDIRECT_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "home"

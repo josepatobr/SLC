@@ -14,7 +14,7 @@
                     CADASTRO
                 </div> 
             
-                <div class="text-white p-2 ">
+                <div class="text-white p-6 text-2xl space-y-5 mx-auto text-right">
            
                     {% if not SOCIALACCOUNT_ONLY %}
                         {% url 'account_signup' as action_url %}
@@ -41,7 +41,7 @@
                     {% endsetvar %}
 
                     {% element p %}
-                        {% blocktranslate %}Já tem uma conta?? entra nessa aba: {{ link }}Logar{{ end_link }}.{% endblocktranslate %}
+                        {% blocktranslate %}Já tem uma conta? entra nessa aba: {{ link }}Logar{{ end_link }}.{% endblocktranslate %}
                     {% endelement %}
                     <div class="text-center text-white">
                         {% if SOCIALACCOUNT_ENABLED %}

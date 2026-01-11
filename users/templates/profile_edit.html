@@ -9,14 +9,14 @@
             
             {% if user.profile_picture %}
                 <div class="mb-4 text-center">
-                    <label class="block text-sm font-medium  text-white mb-2">Foto Atual</label>
+                    <label class="block text-md font-medium  text-white mb-2">Foto Atual</label>
                     <img src="{{ user.profile_picture.url }}" class="w-24 h-24 object-cover rounded-full mx-auto border border-gray-300">
                 </div>
             {% endif %}
 
             {% for field in form %}
-                <div class="mb-4">
-                    <label for="{{ field.id_for_label }}" class="bg-gray-700 text-decoration w-full block text-sm font-medium text-white">{{ field.label }}:</label>
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="bg-gray-700 text-decoration w-full block text-md font-medium text-white">{{ field.label }}:</label>
                     {{ field }}
                     {% if field.errors %}
                         <p class="text-red-500 text-xs italic">{{ field.errors }}</p>

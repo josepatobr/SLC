@@ -6,20 +6,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('filmes', '0005_alter_episode_episode_video_alter_movies_video'),
+        ("filmes", "0005_alter_episode_episode_video_alter_movies_video"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='episode',
-            name='episode_video',
+            model_name="episode",
+            name="episode_video",
             field=upload.fields.S3FileField(upload_to=filmes.models.path_episode_video),
         ),
         migrations.AlterField(
-            model_name='movies',
-            name='video',
-            field=upload.fields.S3FileField(blank=True, null=True, upload_to=filmes.models.path_movie_video),
+            model_name="movies",
+            name="video",
+            field=upload.fields.S3FileField(
+                blank=True, null=True, upload_to=filmes.models.path_movie_video
+            ),
         ),
     ]
