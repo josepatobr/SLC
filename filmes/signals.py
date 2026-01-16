@@ -1,0 +1,23 @@
+from .tasks import (
+    calculate_video_duration,
+    generate_video_sprites_task,
+    process_video_hls_task,
+)
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db import transaction
+from .models import Video
+
+
+@receiver(post_save, sender=Video)
+def video_post_save(sender, instance: Video, created, **kwargs):
+    if instance.source_file:
+        if created or instance.duration == 0:
+            transaction.on_commit(lambda: calculate_video_duration.delay(instance.id))
+        if instance.status == Video.Status.PENDING:
+            Video.objects.filter(id=instance.id).update(status=Video.Status.PROCESSING)
+            transaction.on_commit(lambda: process_video_hls_task.delay(instance.id))
+        if instance.status == Video.Status.COMPLETED and not instance.sprites.exists():
+            transaction.on_commit(
+                lambda: generate_video_sprites_task.delay(instance.id),
+            )

@@ -1,22 +1,25 @@
+{% extends "base.html" %}
 {% load i18n %}
-{% load allauth account %}
-{% load static %}
+{% load allauth %}
 
-{% block content %}
-    <div class="bg-gray-900 flex items-center justify-center min-h-screen py-8">
-        <div class="border rounded-xl bg-blue-700 ">
+{% block 'body' %}
+    <div class="bg-gray-900 text-white flex items-center justify-center h-screen py-8">
+        <div class="flex flex-col gap-2">
             {% element h1 %}
                 {% trans "Sair da conta" %}
             {% endelement %}
+            
             {% element p %}
                 {% trans 'Tem certeza que você quer sair da conta?' %}
             {% endelement %}
+            
             {% url 'account_logout' as action_url %}
             {% element form method="post" action=action_url no_visible_fields=True %}
                 {% slot body %}
                     {% csrf_token %}
                     {{ redirect_field }}
                 {% endslot %}
+                
                 {% slot actions %}
                     {% element button type="submit" %}
                         {% trans 'Sair da conta' %}
@@ -25,4 +28,4 @@
             {% endelement %}
         </div>
     </div>
-{% endblock content %}
+{% endblock 'body' %}

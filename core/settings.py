@@ -1,6 +1,6 @@
+from dotenv import load_dotenv
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
 
 load_dotenv()
@@ -24,21 +24,21 @@ CSRF_TRUSTED_ORIGINS = ["https://slc.up.railway.app"]
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
+    "allauth.socialaccount.providers.google",
     "django.contrib.contenttypes",
+    "django.contrib.staticfiles",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "allauth",
-    "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "home",
-    "users",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "allauth.account",
+    "anymail",
+    "allauth",
     "filmes",
     "upload",
-    "anymail",
+    "users",
+    "home",
 ]
 
 LOGIN_URL = "/accounts/login"
@@ -54,7 +54,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
-"""    "core.middleware.AutoLoginMiddleware",
+"""   "core.middleware.AutoLoginMiddleware",
 """
 SESSION_COOKIE_AGE = 31536000
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False

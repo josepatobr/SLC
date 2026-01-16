@@ -1,13 +1,11 @@
-import contextlib
-
-from django import forms
 from django.contrib.admin.widgets import AdminFileWidget
+from .widgets import S3PlaceholderFile
+from .widgets import S3AdminFileWidget
+from .registry import register_field
 from django.core import signing
 from django.db import models
-
-from .registry import register_field
-from .widgets import S3AdminFileWidget
-from .widgets import S3PlaceholderFile
+from django import forms
+import contextlib
 
 
 class S3FormFileField(forms.FileField):

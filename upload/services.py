@@ -1,12 +1,10 @@
-import math
 from collections.abc import Iterator
+from botocore.config import Config
 from dataclasses import dataclass
+from django.conf import settings
 from datetime import timedelta
 from typing import ClassVar
-
-import boto3
-from botocore.config import Config
-from django.conf import settings
+import boto3, math
 
 
 @dataclass

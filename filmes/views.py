@@ -1,10 +1,10 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import os
-from .models import Movies, Serie
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.conf import settings
+from .models import Video
+import os
 
 
 @csrf_exempt
@@ -28,27 +28,12 @@ def upload_chunks(request):
 
 @login_required
 def movie(request, id):
-    movie = get_object_or_404(Movies, id=id)
+    movie = get_object_or_404(Video, id=id)
 
     return render(
         request,
         "movie.html",
         {
             "movie": movie,
-        },
-    )
-
-
-@login_required
-def serie(request, id):
-    serie = get_object_or_404(Serie, id=id)
-    seasons = serie.seasons.all().prefetch_related("episodes")
-
-    return render(
-        request,
-        "serie.html",
-        {
-            "serie": serie,
-            "seasons": seasons,
         },
     )

@@ -1,11 +1,8 @@
-import logging
-import mimetypes
-import os
-import re
-from collections.abc import Generator
-
 from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
+from collections.abc import Generator
+import re, os, logging, mimetypes
+
 
 logger = logging.getLogger(__name__)
 

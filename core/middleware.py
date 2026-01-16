@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.contrib import auth
 from django.conf import settings
+from django.contrib import auth
+
 
 User = get_user_model()
 
@@ -16,5 +17,4 @@ class AutoLoginMiddleware:
                 auth.login(
                     request, user, backend="django.contrib.auth.backends.ModelBackend"
                 )
-
         return self.get_response(request)

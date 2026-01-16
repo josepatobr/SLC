@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
-from django.dispatch import receiver
-from filmes.models import Serie, Movies
 from .views import resize_and_save_poster
+from filmes.models import Serie, Movies
+from django.dispatch import receiver
 import os
 
 

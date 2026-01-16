@@ -21,6 +21,7 @@ dependencies = [
     "whitenoise>=6.11.0",
     "django-anymail[brevo]==14.0",
     "ruff>=0.14.1",
+    "ffmpeg>=1.4",
 ]
 
 [dependency-groups]

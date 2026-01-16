@@ -151,3 +151,5 @@ function submitRating(formElement, messageElement) {
         messageElement.classList.add('text-red-500');
     });
 }
+
+

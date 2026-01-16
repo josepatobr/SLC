@@ -1,16 +1,12 @@
+from .services import TransferredPart, S3MultipartManager, TransferredParts
+from django.core.exceptions import ValidationError
+from ninja.security import SessionAuthSuperUser
+from django.conf import settings
+from ninja import Router, Schema
+from django.core import signing
+from .registry import get_field
 from uuid import uuid4
 
-from django.conf import settings
-from django.core import signing
-from django.core.exceptions import ValidationError
-from ninja import Router
-from ninja import Schema
-from ninja.security import SessionAuthSuperUser
-
-from .registry import get_field
-from .services import S3MultipartManager
-from .services import TransferredPart
-from .services import TransferredParts
 
 router_upload = Router(tags=["Uploads"], auth=SessionAuthSuperUser())
 manager = S3MultipartManager()

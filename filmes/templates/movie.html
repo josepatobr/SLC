@@ -18,16 +18,20 @@
                 <div class="lg:col-span-2 space-y-6">
                     
                     {% if movie.video %}
-                        <div class="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                            <video 
-                                id="Video" 
-                                class="w-full h-full object-cover"
-                                controls
-                            >
-                                <source src="/api/movies/video/{{ movie.id }}" type="video/mp4">
-                                Seu navegador não suporta vídeo.
-                            </video>
-                        </div>
+                        {% if movie.processado %}
+                            <div class="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+                                <video 
+                                    id="Video" 
+                                    class="w-full h-full object-cover video-js vjs-theme-city"
+                                    controls
+                                >
+                                    <source src="{{ movie.hls_playlist }}" type="application/x-mpegURL">
+                                    Seu navegador não suporta vídeo.
+                                </video>
+                                {% else %}
+                                    <p>O filme está sendo processado... aguarde alguns minutos.</p>
+                            </div>
+                        {% endif %}
                     {% else %}
                         <div class="h-64 flex justify-center items-center bg-gray-700 rounded-lg">
                             <p class="text-gray-400 text-xl"><em>Trailer indisponível.</em></p>

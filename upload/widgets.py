@@ -1,12 +1,11 @@
-from collections.abc import Mapping
-from typing import Any
-
-from django.core import signing
-from django.core.files import File
-from django.forms import ClearableFileInput
 from django.forms.widgets import FILE_INPUT_CONTRADICTION
 from django.forms.widgets import CheckboxInput
+from django.forms import ClearableFileInput
+from collections.abc import Mapping
+from django.core.files import File
+from django.core import signing
 from django.urls import reverse
+from typing import Any
 
 
 class S3PlaceholderFile(File):

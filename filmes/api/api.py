@@ -1,6 +1,6 @@
-from ninja import Router
+from filmes.services import get_video_streaming_response
 from filmes.models import Movies, Episode
-from filmes.services.streaming import get_video_streaming_response
+from ninja import Router
 
 router_movies = Router()
 CHUNK_SIZE = 8192

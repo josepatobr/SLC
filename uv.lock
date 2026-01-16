@@ -382,6 +382,12 @@ wheels = [
 ]
 
 [[package]]
+name = "ffmpeg"
+version = "1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/cc/3b7408b8ecf7c1d20ad480c3eaed7619857bf1054b690226e906fdf14258/ffmpeg-1.4.tar.gz", hash = "sha256:6931692c890ff21d39938433c2189747815dca0c60ddc7f9bb97f199dba0b5b9", size = 5055, upload-time = "2018-10-08T07:50:05.748Z" }
+
+[[package]]
 name = "fido2"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -792,6 +798,7 @@ dependencies = [
     { name = "django-ninja" },
     { name = "django-storages", extra = ["s3"] },
     { name = "dotenv" },
+    { name = "ffmpeg" },
     { name = "gunicorn" },
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
@@ -817,6 +824,7 @@ requires-dist = [
     { name = "django-ninja", specifier = ">=1.4.3" },
     { name = "django-storages", extras = ["s3"], specifier = ">=1.14.6" },
     { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "ffmpeg", specifier = ">=1.4" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "pillow", specifier = ">=12.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.2" },

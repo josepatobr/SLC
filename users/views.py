@@ -1,5 +1,5 @@
-from .models import CustomUserChangeForm, CustomUser
 from django.shortcuts import render, get_object_or_404, redirect
+from .models import CustomUserChangeForm, CustomUser
 
 
 def profile(request, id):
