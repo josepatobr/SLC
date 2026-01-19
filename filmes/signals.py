@@ -9,6 +9,7 @@ from django.db import transaction
 from .models import Video
 
 
+
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance: Video, created, **kwargs):
     if instance.source_file:

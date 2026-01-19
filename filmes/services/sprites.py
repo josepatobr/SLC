@@ -1,6 +1,6 @@
 import json, logging, os, boto3, math, subprocess, shutil
-from .models import Video, VideoSprite
-from .utils import get_threads_count
+from filmes.models import Video, VideoSprite
+from filmes.utils import get_threads_count
 from django.core.files import File
 from django.conf import settings
 from pathlib import Path
@@ -372,7 +372,7 @@ def get_video_tracks_metadata(video_url: str):
             codec = s["codec_type"]
             tags = s.get("tags", {})
             lang = tags.get("language", "und")
-            title = tags.get("title", _("Track %s") % idx)
+            title = tags.get("title", ("Track %s") % idx)
 
             track_info = {
                 "index": idx,
@@ -389,3 +389,4 @@ def get_video_tracks_metadata(video_url: str):
         return None
     else:
         return {"audio": audio_streams, "subtitle": subtitle_streams}
+

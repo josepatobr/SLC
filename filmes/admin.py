@@ -2,13 +2,13 @@ from .tasks import discover_tracks_task, process_track_task, generate_video_spri
 from .models import Video, Episode, VideoTrack, VideoSprite, Movies, Serie
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html_join
+from django.utils.html import format_html_join, format_html
 from django.utils.safestring import mark_safe
-from django.utils.html import format_html
 from django.contrib import admin
 from django.urls import reverse
 from django.db.models import Q
 import contextlib
+
 
 
 admin.site.register(Movies)

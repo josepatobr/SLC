@@ -1,14 +1,10 @@
-from .services import (
-    process_video_to_hls,
-    get_video_duration,
-    generate_video_sprites,
-    get_video_tracks_metadata,
-)
+from filmes.services.sprites import process_video_to_hls, get_video_duration, generate_video_sprites, get_video_tracks_metadata
 from celery.exceptions import SoftTimeLimitExceeded
 from .models import Video, VideoTrack
 import logging, shutil, tempfile
 from celery import shared_task
 from pathlib import Path
+
 
 
 logger = logging.getLogger(__name__)

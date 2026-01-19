@@ -7,6 +7,7 @@ from .models import Video
 import os
 
 
+
 @csrf_exempt
 def upload_chunks(request):
     get_file = request.FILES.get("file")

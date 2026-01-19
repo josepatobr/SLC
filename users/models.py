@@ -6,7 +6,7 @@ from django import forms
 
 
 class CustomUser(AbstractUser):
-    username = None
+    username = models.CharField(max_length=200, null=True, blank=True)
     full_name = models.CharField(max_length=200, unique=False, null=True, blank=True)
     email = models.EmailField(("email address"), unique=True)
     profile_picture = models.ImageField(
@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
     objects: ClassVar[UserManager] = UserManager()
 
     def __str__(self):
-        return str(self.username) if self.username else str(self.email)
+        return str(self.email)
 
 
 class CustomUserChangeForm(forms.ModelForm):
