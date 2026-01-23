@@ -6,6 +6,8 @@ from users.models import CustomUser
 from django.db import models
 from slugify import slugify
 from uuid import uuid4
+import uuid
+
 
 def get_source_file_path(instance, filename, folder=None):
     video_obj = (
@@ -52,12 +54,12 @@ def subtitle_file_path(instance, filename):
 
 class Video(models.Model):
     class Status(models.TextChoices):
-        PENDING = "PENDING", _("Pending")
-        PROCESSING = "PROCESSING", _("Processing")
-        COMPLETED = "COMPLETED", _("Completed")
-        FAILED = "FAILED", _("Failed")
+        PENDING = "PENDING", ("Pending")
+        PROCESSING = "PROCESSING", ("Processing")
+        COMPLETED = "COMPLETED", ("Completed")
+        FAILED = "FAILED", ("Failed")
 
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=255)
     content_object = GenericForeignKey("content_type", "object_id")

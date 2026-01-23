@@ -9,116 +9,334 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Movies',
+            name="Movies",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name_movie', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name_movie", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Season',
+            name="Season",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('season_number', models.PositiveIntegerField(default=1)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("season_number", models.PositiveIntegerField(default=1)),
             ],
         ),
         migrations.CreateModel(
-            name='Serie',
+            name="Serie",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name_serie', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name_serie", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='MoviesWatched',
+            name="MoviesWatched",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('watched_at', models.DateTimeField(auto_now_add=True, verbose_name='Data de Visualização')),
-                ('movie_watched', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='filmes.movies', verbose_name='Filme')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Usuário')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "watched_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Data de Visualização"
+                    ),
+                ),
+                (
+                    "movie_watched",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="filmes.movies",
+                        verbose_name="Filme",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Usuário",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Episode',
+            name="Episode",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('episode_number', models.PositiveIntegerField(default=1)),
-                ('episode_title', models.CharField(max_length=200)),
-                ('season', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='episodes', to='filmes.season')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("episode_number", models.PositiveIntegerField(default=1)),
+                ("episode_title", models.CharField(max_length=200)),
+                (
+                    "season",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="episodes",
+                        to="filmes.season",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='season',
-            name='serie',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='seasons', to='filmes.serie'),
+            model_name="season",
+            name="serie",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="seasons",
+                to="filmes.serie",
+            ),
         ),
         migrations.CreateModel(
-            name='Video',
+            name="Video",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('object_id', models.CharField(max_length=255)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('PROCESSING', 'Processing'), ('COMPLETED', 'Completed'), ('FAILED', 'Failed')], default='PENDING', max_length=20)),
-                ('source_file', upload.fields.S3FileField(blank=True, null=True, upload_to=filmes.models.source_file_path)),
-                ('hls_playlist', upload.fields.S3FileField(blank=True, null=True, upload_to=filmes.models.hls_playlist_path)),
-                ('processing_error', models.TextField(blank=True)),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("object_id", models.CharField(max_length=255)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "Pending"),
+                            ("PROCESSING", "Processing"),
+                            ("COMPLETED", "Completed"),
+                            ("FAILED", "Failed"),
+                        ],
+                        default="PENDING",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "source_file",
+                    upload.fields.S3FileField(
+                        blank=True, null=True, upload_to=filmes.models.source_file_path
+                    ),
+                ),
+                (
+                    "hls_playlist",
+                    upload.fields.S3FileField(
+                        blank=True, null=True, upload_to=filmes.models.hls_playlist_path
+                    ),
+                ),
+                ("processing_error", models.TextField(blank=True)),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.contenttype",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='VideoTrack',
+            name="VideoTrack",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('language', models.CharField(default='pt-br', max_length=10)),
-                ('label', models.CharField(default='Português', max_length=50)),
-                ('subtitle_file', upload.fields.S3FileField(blank=True, null=True, upload_to=filmes.models.subtitle_file_path)),
-                ('video', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tracks', to='filmes.video')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("language", models.CharField(default="pt-br", max_length=10)),
+                ("label", models.CharField(default="Português", max_length=50)),
+                (
+                    "subtitle_file",
+                    upload.fields.S3FileField(
+                        blank=True,
+                        null=True,
+                        upload_to=filmes.models.subtitle_file_path,
+                    ),
+                ),
+                (
+                    "video",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tracks",
+                        to="filmes.video",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='EpisodeWatched',
+            name="EpisodeWatched",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('watched_at', models.DateTimeField(auto_now=True, verbose_name='Última Visualização')),
-                ('episode_watched', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='filmes.episode', verbose_name='Episódio Assistido')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Usuário')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "watched_at",
+                    models.DateTimeField(
+                        auto_now=True, verbose_name="Última Visualização"
+                    ),
+                ),
+                (
+                    "episode_watched",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="filmes.episode",
+                        verbose_name="Episódio Assistido",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Usuário",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-watched_at'],
-                'unique_together': {('user', 'episode_watched')},
+                "ordering": ["-watched_at"],
+                "unique_together": {("user", "episode_watched")},
             },
         ),
         migrations.CreateModel(
-            name='VideoSprite',
+            name="VideoSprite",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, help_text='Unique identifier for the sprite sheet', primary_key=True, serialize=False)),
-                ('image', models.ImageField(help_text='The sprite sheet image file (JPEG)', upload_to=filmes.models.get_sprite_file_path)),
-                ('start_time', models.PositiveIntegerField(help_text='Time in seconds where this sprite sheet starts (e.g., 0)')),
-                ('end_time', models.PositiveIntegerField(help_text='Time in seconds where this sprite sheet ends')),
-                ('interval', models.PositiveIntegerField(default=10, help_text='Interval in seconds between each thumbnail')),
-                ('frame_width', models.PositiveIntegerField(help_text='Width of a single thumbnail in pixels')),
-                ('frame_height', models.PositiveIntegerField(help_text='Height of a single thumbnail in pixels')),
-                ('columns', models.PositiveIntegerField(help_text='Number of columns in the sprite sheet grid')),
-                ('rows', models.PositiveIntegerField(help_text='Number of rows in the sprite sheet grid')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('video', models.ForeignKey(help_text='The video this sprite belongs to', on_delete=django.db.models.deletion.CASCADE, related_name='sprites', to='filmes.video')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        help_text="Unique identifier for the sprite sheet",
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        help_text="The sprite sheet image file (JPEG)",
+                        upload_to=filmes.models.get_sprite_file_path,
+                    ),
+                ),
+                (
+                    "start_time",
+                    models.PositiveIntegerField(
+                        help_text="Time in seconds where this sprite sheet starts (e.g., 0)"
+                    ),
+                ),
+                (
+                    "end_time",
+                    models.PositiveIntegerField(
+                        help_text="Time in seconds where this sprite sheet ends"
+                    ),
+                ),
+                (
+                    "interval",
+                    models.PositiveIntegerField(
+                        default=10,
+                        help_text="Interval in seconds between each thumbnail",
+                    ),
+                ),
+                (
+                    "frame_width",
+                    models.PositiveIntegerField(
+                        help_text="Width of a single thumbnail in pixels"
+                    ),
+                ),
+                (
+                    "frame_height",
+                    models.PositiveIntegerField(
+                        help_text="Height of a single thumbnail in pixels"
+                    ),
+                ),
+                (
+                    "columns",
+                    models.PositiveIntegerField(
+                        help_text="Number of columns in the sprite sheet grid"
+                    ),
+                ),
+                (
+                    "rows",
+                    models.PositiveIntegerField(
+                        help_text="Number of rows in the sprite sheet grid"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "video",
+                    models.ForeignKey(
+                        help_text="The video this sprite belongs to",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sprites",
+                        to="filmes.video",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Video Sprite',
-                'verbose_name_plural': 'Video Sprites',
-                'ordering': ['video', 'start_time'],
-                'constraints': [models.UniqueConstraint(fields=('video', 'start_time'), name='unique_sprite_start_time_per_video')],
+                "verbose_name": "Video Sprite",
+                "verbose_name_plural": "Video Sprites",
+                "ordering": ["video", "start_time"],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("video", "start_time"),
+                        name="unique_sprite_start_time_per_video",
+                    )
+                ],
             },
         ),
     ]

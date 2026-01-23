@@ -6,7 +6,6 @@ router_movies = Router()
 CHUNK_SIZE = 8192
 
 
-
 @router_movies.get("video/{id}", url_name="stream-video")
 def stream_video(request, id: int):
     video = None

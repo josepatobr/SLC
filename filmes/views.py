@@ -1,11 +1,11 @@
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.contrib import messages
 from django.conf import settings
 from .models import Video
 import os
-
 
 
 @csrf_exempt
@@ -29,6 +29,11 @@ def upload_chunks(request):
 
 @login_required
 def movie(request, id):
+    user = request.user
+    if user.user_status == "user_comum":
+        messages.error(request, "Você precisa ser vip para acessar essa area.")
+        return redirect("home")
+
     movie = get_object_or_404(Video, id=id)
 
     return render(

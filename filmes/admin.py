@@ -10,7 +10,6 @@ from django.db.models import Q
 import contextlib
 
 
-
 admin.site.register(Movies)
 admin.site.register(Serie)
 admin.site.register(Episode)

@@ -5,6 +5,17 @@
 {% block 'body' %}
 <br>
 <body class="bg-gray-900 min-h-screen">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <div class="mx-auto p-5 max-w-screen-xl">  
         <!-- historico de series -->        
         <div class="bg-gray-700 rounded-xl shadow-2xl p-4 space-y-4">                
@@ -28,8 +39,8 @@
                                             loading="lazy"
                                             srcset="{{ movie.get_srcset_urls }}"
                                             sizes="(max-width: 600px) 100vw, 
-                                                (max-width: 1024px) 33vw, 
-                                                25vw"
+                                                    (max-width: 1024px) 33vw, 
+                                                    25vw"
                                         >
                                         <h3 class="mt-2 text-sm font-semibold text-white truncate group-hover:text-blue-600">
                                             {{ movie.name_movie }}
@@ -77,10 +88,9 @@
                         </div>
                     </div>
                 {% endif %}
-            </div>
-                
-            </div>
-            <br>
+            </div>     
+        </div>
+        <br>
 
         <!-- recomendados -->
         <div class="bg-gray-700 rounded-xl shadow-2xl p-4 space-y-4">
@@ -90,23 +100,26 @@
                 
             <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
                 {% for recommended_movie in recommended_movies %}
-                    <div class="flex-shrink-0 w-32 sm:w-40 text-center">
-                        <a href="{% url 'movie' id=recommended_movie.id %}" class="block group">        
-                            <img 
-                                src="{{ recommended_movie.poster.url }}" 
-                                alt="{{ recommended_movie.name_movie }}" 
-                                class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
-                                loading="lazy"
-                                srcset="{{ recommended_movie.get_srcset_urls }}"
-                                sizes="(max-width: 600px) 100vw, 
-                                    (max-width: 1024px) 33vw, 
-                                    25vw"
-                            >
-                            <h3 class="mt-2 text-sm font-semibold text-white truncate group-hover:text-blue-600">
-                                {{ recommended_movie.name_movie }}
-                            </h3>
-                        </a>
-                    </div>
+                        <div class="flex-shrink-0 w-32 sm:w-40 text-center">
+                            {% if user.is_vip or user.is_beta %}
+                                <a href="{% url 'movie' id=recommended_movie.id %}" class="block group">  
+                                    <img 
+                                        src="{{ recommended_movie.poster.url }}" 
+                                        alt="{{ recommended_movie.name_movie }}" 
+                                        class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                        loading="lazy"
+                                        srcset="{{ recommended_movie.get_srcset_urls }}"
+                                        sizes="(max-width: 600px) 100vw, 
+                                            (max-width: 1024px) 33vw, 
+                                            25vw"
+                                    >
+                                    <h3 class="mt-2 text-sm font-semibold text-white truncate group-hover:text-blue-600">
+                                        {{ recommended_movie.name_movie }}
+                                    </h3>
+                                </a>
+                            {% endif %}      
+
+                        </div>
                 {% endfor %}
             </div>   
         </div>
@@ -121,21 +134,23 @@
             <div class="flex overflow-x-auto gap-4 py-2 custom-scrollbar">
                 {% for serie in series %}
                     <div class="flex-shrink-0 w-32 sm:w-40 text-center">
-                        <a href="{% url 'serie' id=serie.id %}" class="block group">
-                            <img 
-                                src="{{ serie.serie_poster.url }}" 
-                                alt="{{ serie.name_serie }}" 
-                                class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
-                                loading="lazy"
-                                srcset="{{ serie.get_srcset_urls }}"
-                                sizes="(max-width: 600px) 100vw, 
-                                    (max-width: 1024px) 33vw, 
-                                    25vw"
-                            >
-                            <h3 class="mt-2 text-sm font-semibold text-white truncate group-hover:text-blue-600">
-                                {{ serie.name_serie }}
-                            </h3>
-                        </a>
+                        {% if user.is_vip or user.is_beta %}
+                            <a href="{% url 'serie' id=serie.id %}" class="block group">
+                                <img 
+                                    src="{{ serie.serie_poster.url }}" 
+                                    alt="{{ serie.name_serie }}" 
+                                    class="w-full h-auto object-cover rounded-lg shadow-md transition duration-300 group-hover:shadow-xl group-hover:scale-105"
+                                    loading="lazy"
+                                    srcset="{{ serie.get_srcset_urls }}"
+                                    sizes="(max-width: 600px) 100vw, 
+                                        (max-width: 1024px) 33vw, 
+                                        25vw"
+                                >
+                                <h3 class="mt-2 text-sm font-semibold text-white truncate group-hover:text-blue-600">
+                                    {{ serie.name_serie }}
+                                </h3>
+                            </a>
+                        {% endif %}
                     </div>
                 {% endfor %} 
             </div>

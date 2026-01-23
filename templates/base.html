@@ -28,6 +28,7 @@
 
                     {% if user.is_authenticated %}
                         <a href="{% url 'profile' user.id %}" class="text-white hover:text-blue-600">perfil</a>
+                        <a href="{% url 'checkout' %}" class="text-white hover:text-blue-600">Assinatura VIP</a>
                         <a id="Link-login" href="{% url 'account_logout' %}" class="text-white hover:text-blue-600">sair da conta(wip)</a>
                     {% endif %}
                 </div>

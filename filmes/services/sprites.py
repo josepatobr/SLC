@@ -389,4 +389,3 @@ def get_video_tracks_metadata(video_url: str):
         return None
     else:
         return {"audio": audio_streams, "subtitle": subtitle_streams}
-

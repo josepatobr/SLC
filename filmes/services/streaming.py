@@ -6,7 +6,6 @@ import re, os, logging, mimetypes
 logger = logging.getLogger(__name__)
 
 
-
 class RangeFileWrapper:
     def __init__(self, file_obj, offset=0, length=None, chunk_size=8192):
         self.file_obj = file_obj

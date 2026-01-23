@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "anymail",
     "allauth",
+    "payment",
     "filmes",
     "upload",
     "users",
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "core.middleware.AutoLoginMiddleware",
 ]
 """   "core.middleware.AutoLoginMiddleware",
 """
@@ -111,11 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -129,7 +128,6 @@ STATICFILES_DIRS = [str(BASE_DIR / "static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -152,10 +150,12 @@ EMAIL_SUBJECT_PREFIX = os.getenv(
     default="[SLC] ",
 )
 
+
 # CELERY
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+
 
 # django-allauth
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
@@ -174,7 +174,6 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 # STORAGES
-
 AWS_ACCESS_KEY_ID = os.getenv("DJANGO_AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("DJANGO_AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("DJANGO_AWS_STORAGE_BUCKET_NAME")
@@ -191,6 +190,7 @@ AWS_S3_REGION_NAME = os.getenv("DJANGO_AWS_S3_REGION_NAME", default=None)
 AWS_S3_CUSTOM_DOMAIN = os.getenv("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 AWS_S3_ENDPOINT_URL = os.getenv("DJANGO_AWS_S3_ENDPOINT_URL", default=None)
 aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+
 
 # STATIC & MEDIA
 STORAGES = {
@@ -210,6 +210,7 @@ STORAGES = {
     },
 }
 
+
 MEDIA_URL = f"https://{aws_s3_domain}/media/"
 COLLECTFASTA_STRATEGY = "collectfasta.strategies.boto3.Boto3Strategy"
 STATIC_URL = f"https://{aws_s3_domain}/static/"
@@ -226,3 +227,9 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT"),
     },
 }
+
+
+# STRIPE
+KEY_PUBLIC_STRIPE = (os.getenv("KEY_PUBLIC_STRIPE"),)
+KEY_SECRET_STRIPE = (os.getenv("KEY_SECRET_STRIPE"),)
+ENDPOINT_SECRET = (os.getenv("ENDPOINT_SECRET"),)
