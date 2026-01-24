@@ -233,3 +233,6 @@ DATABASES = {
 KEY_PUBLIC_STRIPE = (os.getenv("KEY_PUBLIC_STRIPE"),)
 KEY_SECRET_STRIPE = (os.getenv("KEY_SECRET_STRIPE"),)
 ENDPOINT_SECRET = (os.getenv("ENDPOINT_SECRET"),)
+
+
+YOUR_DOMAIN = "http://localhost:8000"

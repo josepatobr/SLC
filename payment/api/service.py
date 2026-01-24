@@ -1,3 +1,4 @@
+from ninja.security import django_auth
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from users.models import CustomUser
@@ -7,10 +8,10 @@ import stripe
 
 
 stripe.api_key = getattr(settings, "KEY_SECRET_STRIPE")
-stripe_api = NinjaAPI()
+stripe_api = NinjaAPI(auth=django_auth)
 
 
-YOUR_DOMAIN = "http://localhost:8000"
+YOUR_DOMAIN = getattr(settings, "YOUR_DOMAIN")
 
 
 @stripe_api.post("/create-checkout-session")
@@ -54,7 +55,7 @@ def create_checkout_session(request):
         return {"error": str(e)}
 
 
-@stripe_api.post("/stripe-webhook", csrf_exempt=True)
+@stripe_api.post("/stripe-webhook")
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
@@ -74,9 +75,9 @@ def stripe_webhook(request):
             user.user_status = "USER_VIP"
             user.save()
 
-            print(f"Pagamento confirmado! Usuário {user.username} agora é VIP.")
+            return(f"Pagamento confirmado! Usuário {user.username} agora é VIP.")
         except CustomUser.DoesNotExist:
-            print("Erro: Cliente Stripe não encontrado no nosso banco de dados.")
+            return("Erro: Cliente Stripe não encontrado no nosso banco de dados.")
 
     return HttpResponse(status=200)
 
