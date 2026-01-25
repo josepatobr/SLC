@@ -24,8 +24,7 @@ def home(request):
         serie_watched_objects = []
 
     recommended_movies = Movies.objects.order_by("-watch_count")[:20]
-    romance_movies = Movies.objects.filter(gender__genders="ROMANCE")
-    action_movies = Movies.objects.filter(gender__genders="ACTION")
+
     series = Serie.objects.all()
 
     return render(
@@ -36,8 +35,6 @@ def home(request):
             "movies_watched": movies_watched_objects,
             "recommended_movies": recommended_movies,
             "serie": series,
-            "romance_movies": romance_movies,
-            "action_movies": action_movies,
         },
     )
 

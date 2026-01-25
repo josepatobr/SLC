@@ -2,13 +2,14 @@ from ninja.security import django_auth
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from users.models import CustomUser
+from payment.models import Payment
 from django.conf import settings
-from ninja import NinjaAPI
+from ninja import Router
 import stripe
 
 
 stripe.api_key = getattr(settings, "KEY_SECRET_STRIPE")
-stripe_api = NinjaAPI(auth=django_auth)
+stripe_api = Router(auth=django_auth)
 
 
 YOUR_DOMAIN = getattr(settings, "YOUR_DOMAIN")
@@ -17,24 +18,24 @@ YOUR_DOMAIN = getattr(settings, "YOUR_DOMAIN")
 @stripe_api.post("/create-checkout-session")
 def create_checkout_session(request):
     user = request.user
-    display_name = user.full_name if user.full_name else user.username
-
+    display_name = user.full_name if user.full_name else user.email
+    
     try:
-        customer = stripe.Customer.create(
-            email=user.email,
-            name=display_name,
-        )
-
-        user.stripe_customer_id = customer.id
-        user.save()
+        if not user.stripe_customer_id:
+            customer = stripe.Customer.create(
+                email=user.email,
+                name=display_name,
+            )
+            user.stripe_customer_id = customer.id
+            user.save()
 
         checkout_session = stripe.checkout.Session.create(
-            customer=customer.id,
+            customer=user.stripe_customer_id,
             line_items=[
                 {
                     "price_data": {
                         "currency": "brl",
-                        "unit_amount": 50,
+                        "unit_amount": 100,
                         "product_data": {
                             "name": "SLC VIP",
                             "description": "Acesso ilimitado por 1 mês",
@@ -44,13 +45,19 @@ def create_checkout_session(request):
                 }
             ],
             mode="payment",
-            payment_intent_data={
-                "setup_future_usage": "off_session",
-            },
-            success_url=YOUR_DOMAIN + "/success.html",
-            cancel_url=YOUR_DOMAIN + "/cancel.html",
+            success_url=YOUR_DOMAIN + "/payment/success/",
+            cancel_url=YOUR_DOMAIN + "/payment/cancel/",
         )
+
+        Payment.objects.create(
+            user=user,
+            stripe_checkout_id=checkout_session.id,
+            status_payment=Payment.Status.PENDING,
+            amount=1.00
+        )
+
         return redirect(checkout_session.url)
+
     except Exception as e:
         return {"error": str(e)}
 
@@ -68,18 +75,32 @@ def stripe_webhook(request):
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        customer_id = session.get("customer")
-        try:
-            user = CustomUser.objects.get(stripe_customer_id=customer_id)
+        checkout_id = session.get("id") 
 
-            user.user_status = "USER_VIP"
+        try:
+            pagamento = Payment.objects.get(stripe_checkout_id=checkout_id)
+                        
+            pagamento.status = Payment.Status.PURCHASED
+            pagamento.save()
+
+            user = pagamento.user
+            user.user_status = CustomUser.UserStatus.USER_VIP
             user.save()
 
-            return(f"Pagamento confirmado! Usuário {user.username} agora é VIP.")
+            return {"message": f"Pagamento {checkout_id} confirmado! {user.email} agora é VIP."}
         except CustomUser.DoesNotExist:
             return("Erro: Cliente Stripe não encontrado no nosso banco de dados.")
+        except Payment.DoesNotExist:
+            return(f"ERRO CRÍTICO: Pagamento {checkout_id} confirmado no Stripe, mas não existe no banco!")
 
-    return HttpResponse(status=200)
+    elif event["type"] in ["checkout.session.async_payment_failed", "payment_intent.payment_failed"]:
+            session = event["data"]["object"]
+            checkout_id = session.get("id") or session.get("metadata", {}).get("checkout_id")
+                
+            pagamento = Payment.objects.filter(stripe_checkout_id=checkout_id).first()
+            if pagamento:
+                pagamento.status = Payment.Status.FAILED
+                pagamento.save()
 
 
 @stripe_api.post("/charge-saved-card/{customer_id}")

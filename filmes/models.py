@@ -91,16 +91,30 @@ class VideoTrack(models.Model):
     subtitle_file = S3FileField(upload_to=subtitle_file_path, blank=True, null=True)
 
 
+class GenderChoices(models.TextChoices):
+        ACAO = 'AC', _('Ação')
+        COMEDIA = 'CO', _('Comédia')
+        DRAMA = 'DR', _('Drama')
+        TERROR = 'TE', _('Terror')
+        ROMANCE = 'RO', _('Romance')
+        FICCAO = 'FC', _('Ficção Científica')
+        DOCUMENTARIO = 'DO', _('Documentário')
+        ANIMACAO = 'AN', _('Animação')
+
+
 class Movies(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name_movie = models.CharField(max_length=100)
     video_record = GenericRelation(Video)
+    watch_count = models.PositiveIntegerField(default=0)
+    gender = models.CharField(max_length=2, choices=GenderChoices.choices, default=GenderChoices.DRAMA)
 
 
 class Serie(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name_serie = models.CharField(max_length=100)
     video_record = GenericRelation(Video)
+    gender = models.CharField(max_length=2, choices=GenderChoices.choices, default=GenderChoices.DRAMA)
 
 
 class Season(models.Model):
@@ -207,3 +221,5 @@ class EpisodeWatched(models.Model):
 
     def __str__(self):
         return f"{self.user.username} assistiu {self.episode_watched.episode_title}"
+
+
