@@ -2,21 +2,42 @@
 {% load static %}
 {% block 'title' %}Pagamentos{% endblock 'title' %}
 
+{% block 'extra_head' %}
+    <script src="{% static 'js/checkout.js' %}"></script>
+{% endblock 'extra_head' %}
+
 {% block 'body' %}
-  <body class="bg-gray-900 min-h-screen">
-    <div class="flex items-center justify-center w-64 flex display size-20 bg-white">
-        <section class="text-center text-white">
-          <div class="">
-            <div class="description">
-              <h3>Assinatura SLC VIP</h3>
-              <h5>R$ 1,00</h5>
-            </div>
+  <div class="bg-gray-900 min-h-screen flex items-center justify-center">
+    <div class="bg-gray-700 p-8 rounded-lg shadow-lg max-w-sm ">
+      <section class="flex flex-col items-center justify-center p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-xl transition-all hover:shadow-2xl max-w-sm mx-auto">
+  
+        <div class="mb-4 px-3 py-1 rounded-full bg-blue-600 text-[10px] font-bold uppercase tracking-widest text-white">
+          VIP
+        </div>
+
+        <div class="mb-8 text-center">
+          <h3 class="text-3xl text-white font-extrabold tracking-tight mb-2">
+            Assinatura SLC <span class="text-blue-500">VIP</span>
+          </h3>
+          
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-white text-4xl font-black">R$ 1,00</span>
+            <span class="text-gray-400 text-sm italic">/mês</span>
           </div>
 
-          <form action="/create-checkout-session" method="POST">{% csrf_token %}
-            <button type="submit" id="checkout-button">Pagar agora</button>
-          </form>
-        </section>
+          <p class="text-gray-300 leading-relaxed max-w-[250px] mx-auto text-sm">
+            Acesso ilimitado a todos os filmes e séries da nossa plataforma.
+          </p>
+        </div>
+
+        <button type="submit" id="checkout-button" 
+          class="w-full bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95 text-white font-bold py-4 px-8 rounded-xl uppercase tracking-wider transition-all duration-300 shadow-lg shadow-blue-600/30">
+            Assinar Agora
+        </button>
+
+        <p class="mt-4 text-[10px] text-gray-500 uppercase font-medium">Cancelamento grátis a qualquer momento</p>
+      </section>
     </div>
-  </body>
+  </div>
+  <script src="{% static 'js/checkout.js' %}"></script>
 {% endblock 'body' %}

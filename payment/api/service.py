@@ -15,7 +15,7 @@ stripe_api = Router(auth=django_auth)
 YOUR_DOMAIN = getattr(settings, "YOUR_DOMAIN")
 
 
-@stripe_api.post("/create-checkout-session")
+@stripe_api.post("create-checkout-session/")
 def create_checkout_session(request):
     user = request.user
     display_name = user.full_name if user.full_name else user.email
@@ -62,7 +62,7 @@ def create_checkout_session(request):
         return {"error": str(e)}
 
 
-@stripe_api.post("/stripe-webhook")
+@stripe_api.post("stripe-webhook/")
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
@@ -103,7 +103,7 @@ def stripe_webhook(request):
                 pagamento.save()
 
 
-@stripe_api.post("/charge-saved-card/{customer_id}")
+@stripe_api.post("charge-saved-card/{customer_id}")
 def charge_saved_card(request, customer_id: str, payment_method_id: str):
     try:
         payment_intent = stripe.PaymentIntent.create(
