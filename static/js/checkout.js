@@ -1,7 +1,5 @@
-document.querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault(); 
-    
-    const btn = document.getElementById('checkout-button');
+
+    document.getElementById('checkout-button').addEventListener('click', funcion_checkout);
     const originalText = btn.innerText;
 
     btn.disabled = true;
@@ -34,7 +32,7 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         alert('Ocorreu um erro ao processar seu pagamento. Tente novamente.');
         resetButton(btn, originalText);
     }
-});
+;
 
 function resetButton(btn, text) {
     btn.disabled = false;
