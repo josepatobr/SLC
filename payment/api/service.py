@@ -1,6 +1,5 @@
+from django.http import HttpResponse, JsonResponse
 from ninja.security import django_auth
-from django.shortcuts import redirect
-from django.http import HttpResponse
 from users.models import CustomUser
 from payment.models import Payment
 from django.conf import settings
@@ -56,11 +55,9 @@ def create_checkout_session(request):
             amount=1.00
         )
 
-        return redirect(checkout_session.url)
-
+        return JsonResponse({'url': checkout_session.url})
     except Exception as e:
-        return {"error": str(e)}
-
+        return JsonResponse({'error': str(e)}, status=400)
 
 @stripe_api.post("stripe-webhook/")
 def stripe_webhook(request):
