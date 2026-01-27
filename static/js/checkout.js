@@ -1,6 +1,6 @@
 
-    document.getElementById('checkout-button').addEventListener('click', funcion_checkout);
-    const originalText = btn.innerText;
+document.getElementById('checkout-button')?.addEventListener('click', funcion_checkout);
+const originalText = btn.innerText;
 
     btn.disabled = true;
     btn.innerHTML = `

@@ -18,6 +18,7 @@ SECRET_KEY = "django-insecure-&*2t847m5yaov3)ops+_t@%n-s2#p3m-_j44pew^=n0q2*3gwp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = ["slc.up.railway.app", "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ["https://slc.up.railway.app"]
 
@@ -200,16 +201,18 @@ STORAGES = {
             "location": "",
             "file_overwrite": False,
         },
+
     },
     "staticfiles": {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
             "location": "static",
-            "default_acl": "public-read",
+            "default_acl": "public-read",  
         },
     },
 }
-
+if DEBUG:
+    STORAGES["staticfiles" ]["backend" ] = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 MEDIA_URL = f"https://{aws_s3_domain}/media/"
 COLLECTFASTA_STRATEGY = "collectfasta.strategies.boto3.Boto3Strategy"
