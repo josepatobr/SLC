@@ -5,7 +5,7 @@
     "build": "npm run tailwind"
   },
   "devDependencies": {
-    "tailwindcss": "^4.1.14",
-    "@tailwindcss/cli": "^4.1.14"
+    "tailwindcss": "^4.1.18",
+    "@tailwindcss/cli": "^4.1.18"
   }
 }
