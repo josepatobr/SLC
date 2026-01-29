@@ -2,12 +2,10 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -16,34 +14,43 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-&*2t847m5yaov3)ops+_t@%n-s2#p3m-_j44pew^=n0q2*3gwp"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = os.getenv("DEBUG", default=False) == "True"
 
 ALLOWED_HOSTS = ["slc.up.railway.app", "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ["https://slc.up.railway.app"]
 
+# DATABASES
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_NAME"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
+    },
+}
+
 # Application definition
 
 INSTALLED_APPS = [
-    "allauth.socialaccount.providers.google",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "allauth.socialaccount",
     "django.contrib.admin",
     "django.contrib.auth",
-    "allauth.account",
-    "anymail",
     "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "anymail",
     "payment",
     "filmes",
     "upload",
     "users",
     "home",
 ]
-
-LOGIN_URL = "/accounts/login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -55,14 +62,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "core.middleware.AutoLoginMiddleware",
 ]
-"""   "core.middleware.AutoLoginMiddleware",
-"""
-SESSION_COOKIE_AGE = 31536000
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-LOGOUT_REDIRECT_URL = "/accounts/login"
+LOGIN_URL = "account_login"
+LOGOUT_REDIRECT_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
 AUTH_USER_MODEL = "users.CustomUser"
 AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
@@ -72,7 +75,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -119,28 +122,23 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_ROOT = str(BASE_DIR / "staticfiles")
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [str(BASE_DIR / "static")]
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-# imagens
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
-ANYMAIL = {
-    "BREVO_API_KEY": os.getenv("BREVO_API_KEY"),
-    "BREVO_API_URL": os.getenv("BREVO_API_URL", default="https://api.brevo.com/v3/"),
-}
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", default="localhost")
+    # https://docs.djangoproject.com/en/dev/ref/settings/#email-port
+    EMAIL_PORT = 1025
+else:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    ANYMAIL = {
+        "BREVO_API_KEY": os.getenv("BREVO_API_KEY"),
+        "BREVO_API_URL": os.getenv(
+            "BREVO_API_URL", default="https://api.brevo.com/v3/"
+        ),
+    }
 DEFAULT_FROM_EMAIL = os.getenv(
     "DJANGO_DEFAULT_FROM_EMAIL",
     default="SLC <noreply@slc.com>",
@@ -169,10 +167,17 @@ ACCOUNT_EMAIL_VERIFICATION_SUPPORTS_RESEND = True
 ACCOUNT_EMAIL_NOTIFICATIONS = True
 ACCOUNT_CHANGE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
-
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
+
+# STATIC
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [str(BASE_DIR / "static")]
+
+# MEDIA
+MEDIA_ROOT = str(BASE_DIR / "media")
+MEDIA_URL = "/media/"
 
 # STORAGES
 AWS_ACCESS_KEY_ID = os.getenv("DJANGO_AWS_ACCESS_KEY_ID")
@@ -190,8 +195,6 @@ AWS_S3_MAX_MEMORY_SIZE = os.getenv(
 AWS_S3_REGION_NAME = os.getenv("DJANGO_AWS_S3_REGION_NAME", default=None)
 AWS_S3_CUSTOM_DOMAIN = os.getenv("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 AWS_S3_ENDPOINT_URL = os.getenv("DJANGO_AWS_S3_ENDPOINT_URL", default=None)
-aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-
 
 # STATIC & MEDIA
 STORAGES = {
@@ -201,14 +204,6 @@ STORAGES = {
             "location": "",
             "file_overwrite": False,
         },
-
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            "location": "static",
-            "default_acl": "public-read",  
-        },
     },
 }
 
@@ -216,29 +211,17 @@ if DEBUG:
     STORAGES["staticfiles"] = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     }
-    
-MEDIA_URL = f"https://{aws_s3_domain}/media/"
-COLLECTFASTA_STRATEGY = "collectfasta.strategies.boto3.Boto3Strategy"
-STATIC_URL = f"https://{aws_s3_domain}/static/"
-
-
-# postgreSQL
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_NAME"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST"),
-        "PORT": os.getenv("POSTGRES_PORT"),
-    },
-}
+else:
+    STORAGES["staticfiles"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "location": "static",
+            "default_acl": "public-read",
+        },
+    }
 
 
 # STRIPE
-KEY_PUBLIC_STRIPE = (os.getenv("KEY_PUBLIC_STRIPE"),)
-KEY_SECRET_STRIPE = (os.getenv("KEY_SECRET_STRIPE"),)
-ENDPOINT_SECRET = (os.getenv("ENDPOINT_SECRET"),)
-
-
-YOUR_DOMAIN = "http://localhost:8000"
+KEY_PUBLIC_STRIPE = os.getenv("KEY_PUBLIC_STRIPE")
+KEY_SECRET_STRIPE = os.getenv("KEY_SECRET_STRIPE")
+ENDPOINT_SECRET = os.getenv("ENDPOINT_SECRET")

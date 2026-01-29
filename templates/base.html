@@ -6,7 +6,6 @@
     
     <!-- tailwind -->
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
-    <link href="{% static 'css/input.css' %}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     
     <!-- sistema de qualidade de video -->
@@ -22,8 +21,8 @@
                 <div class="hidden sm:flex sm:items-center sm:space-x-6"> 
                     <a id="Link-home" href="{% url 'home' %}" class="text-white hover:text-blue-600">Home</a>
                     {% if not user.is_authenticated %}
-                        <a id="Link-cadastro" href="/accounts/signup/"class="text-white hover:text-blue-600">Cadastro</a>
-                        <a id="Link-login" href="/accounts/login/" class="text-white hover:text-blue-600">Login</a>
+                        <a id="Link-cadastro" href="{% url 'account_signup' %}"class="text-white hover:text-blue-600">Cadastro</a>
+                        <a id="Link-login" href="{% url 'account_login' %}" class="text-white hover:text-blue-600">Login</a>
                     {% endif %}
 
                     {% if user.is_authenticated %}
