@@ -211,9 +211,12 @@ STORAGES = {
         },
     },
 }
-if DEBUG:
-    STORAGES["staticfiles" ]["backend" ] = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
+if DEBUG:
+    STORAGES["staticfiles"] = {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    }
+    
 MEDIA_URL = f"https://{aws_s3_domain}/media/"
 COLLECTFASTA_STRATEGY = "collectfasta.strategies.boto3.Boto3Strategy"
 STATIC_URL = f"https://{aws_s3_domain}/static/"
