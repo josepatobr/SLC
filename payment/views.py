@@ -43,8 +43,8 @@ def checkout(request: HttpRequest):
                     "quantity": 1,
                 }
             ],
-            success_url=reverse("success"),
-            cancel_url=reverse("cancel"),
+            success_url=request.build_absolute_uri(reverse("success")),
+            cancel_url=request.build_absolute_uri(reverse("cancel")),
         )
 
         Payment.objects.create(
