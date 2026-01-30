@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
         max_length=20, choices=UserStatus, default=UserStatus.USER_COMUM
     )
     objects: ClassVar[UserManager] = UserManager()
-    
+
     def __str__(self):
         return str(self.username)
 

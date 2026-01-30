@@ -2,62 +2,80 @@
 {% load i18n %}
 {% load allauth account %}
 {% load static %}
-{% block 'title' %}login{% endblock 'title' %}
 
+{% block 'title' %}{% trans "Login" %}{% endblock 'title' %}
 
-<br>
 {% block 'body' %}
-    <body class="bg-gray-900 min-h-screen">
-        <div class="p-4 max-w-xl flex justify-center items-center size-full mx-auto"> 
-            <div class="bg-gray-700 rounded-xl shadow-2xl p-4 space-y-5">                
-                <div class="text-2xl text-center font-extrabold text-white border-b p-2">
-                    LOGIN
-                </div> 
+<div class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
+    <div class="w-lg"> 
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
             
-                <div class="text-white p-6 text-2xl space-y-5 mx-auto text-right">
-                    {% url 'account_login' as login_url %}
-                    {% element form form=form method="post" action=login_url tags="entrance,login" %}
-                        {% slot body %}
+            <div class="bg-gray-700/50 p-8 text-center border-b border-gray-700">
+                <h1 class="text-3xl font-bold text-white tracking-tight">
+                    {% trans "Bem-vindo" %}
+                </h1>
+                <p class="text-gray-400 mt-2 text-sm">Entre com seus dados para acessar</p>
+            </div> 
+
+            <div class="p-8">
+                {% url 'account_login' as login_url %}
+                {% element form form=form method="post" action=login_url tags="entrance,login" %}
+                    {% slot body %}
+                        <div class="space-y-4 text-white">
                             {% csrf_token %}
-                            {% element fields form=form unlabeled=True %}
-                            {% endelement %}
+                            <div class="allauth-form-fields">
+                                {% element fields form=form unlabeled=True %}
+                                {% endelement %}
+                            </div>
                             {{ redirect_field }}
-                        {% endslot %}
-                        {% slot actions %}
-                                {% element button type="submit" tags="prominent,login" %}
-                                    {% trans "entrar na conta" %}
-                                {% endelement %}   
-                        {% endslot %}
-                    {% endelement %}
-                    
-                    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-                        {% element hr %}
-                        {% endelement %}
-                        {% element button_group vertical=True %}
-                            {% if PASSKEY_LOGIN_ENABLED %}
-                                {% element button type="submit" form="mfa_login" id="passkey_login" tags="prominent,login,outline,primary" %}
-                                    {% trans "Sign in with a passkey" %}
-                                {% endelement %}
-                            {% endif %}
-                            {% if LOGIN_BY_CODE_ENABLED %}
-                                {% element button href=request_login_code_url tags="prominent,login,outline,primary" %}
-                                    {% trans "Send me a sign-in code" %}
-                                {% endelement %}
-                            {% endif %}
-                        {% endelement %}
-                    {% endif %}
-                    
-                </div>
-                
-                <div class="text-center text-white">
-                    {% if SOCIALACCOUNT_ENABLED %}
-                        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-                    {% endif %}
+                        </div>
+                    {% endslot %}
+
+                    {% slot actions %}
+                        <div class="mt-6">
+                            {% element button type="submit" tags="prominent,login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-lg" %}
+                                {% trans "Entrar na conta" %}
+                            {% endelement %}
+                        </div>
+                    {% endslot %}
+                {% endelement %}
+
+                <div class="mt-6 text-center">
+                    <a href="{{ signup_url }}" class="text-sm text-gray-400 hover:text-white transition">
+                        Ainda não tem conta? <span class="text-blue-400 font-semibold">Cadastre-se</span>
+                    </a>
                 </div>
 
+                {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
+                    <div class="relative my-8">
+                        <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-gray-700"></span></div>
+                        <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-800 px-2 text-gray-500 underline">Ou continue com</span></div>
+                    </div>
+
+                    <div class="space-y-3">
+                        {% if PASSKEY_LOGIN_ENABLED %}
+                            {% element button type="submit" form="mfa_login" id="passkey_login" tags="outline" class="w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition" %}
+                                {% trans "Sign in with a passkey" %}
+                            {% endelement %}
+                        {% endif %}
+                        
+                        {% if LOGIN_BY_CODE_ENABLED %}
+                            <a href="{{ request_login_code_url }}" class="block text-center w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition text-sm">
+                                {% trans "Receber código por e-mail" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
+
+            {% if SOCIALACCOUNT_ENABLED %}
+                <div class="bg-gray-700/30 p-6 text-center border-t border-gray-700">
+                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                </div>
+            {% endif %}
         </div>
-    </body>
+    </div>
+</div>
 {% endblock 'body' %}
 
 {% block extra_body %}
@@ -65,3 +83,4 @@
         {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
     {% endif %}
 {% endblock %}
+

@@ -4,15 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('filmes', '0003_serie_gender'),
+        ("filmes", "0003_serie_gender"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='movies',
-            name='gender',
-            field=models.CharField(choices=[('AC', 'Ação'), ('CO', 'Comédia'), ('DR', 'Drama'), ('TE', 'Terror'), ('RO', 'Romance'), ('FC', 'Ficção Científica'), ('DO', 'Documentário'), ('AN', 'Animação')], default='DR', max_length=2),
+            model_name="movies",
+            name="gender",
+            field=models.CharField(
+                choices=[
+                    ("AC", "Ação"),
+                    ("CO", "Comédia"),
+                    ("DR", "Drama"),
+                    ("TE", "Terror"),
+                    ("RO", "Romance"),
+                    ("FC", "Ficção Científica"),
+                    ("DO", "Documentário"),
+                    ("AN", "Animação"),
+                ],
+                default="DR",
+                max_length=2,
+            ),
         ),
     ]

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,14 +14,52 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name="Payment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('stripe_checkout_id', models.CharField(max_length=255)),
-                ('status_payment', models.CharField(choices=[('nothing', 'usuario não fez nenhum pedido'), ('pending', 'usuario fez o pedido da compra e esta no aguardo'), ('purchased', 'compra confirmada e usuario se tornou um vip'), ('failed', 'erro na compra, tentaremos novamente e se falhar o dinheiro é devolvido')], default='NOTHING', max_length=20)),
-                ('amount', models.DecimalField(decimal_places=2, default=1.0, max_digits=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("stripe_checkout_id", models.CharField(max_length=255)),
+                (
+                    "status_payment",
+                    models.CharField(
+                        choices=[
+                            ("nothing", "usuario não fez nenhum pedido"),
+                            (
+                                "pending",
+                                "usuario fez o pedido da compra e esta no aguardo",
+                            ),
+                            (
+                                "purchased",
+                                "compra confirmada e usuario se tornou um vip",
+                            ),
+                            (
+                                "failed",
+                                "erro na compra, tentaremos novamente e se falhar o dinheiro é devolvido",
+                            ),
+                        ],
+                        default="NOTHING",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(decimal_places=2, default=1.0, max_digits=10),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

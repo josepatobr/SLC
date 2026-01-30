@@ -20,6 +20,7 @@ dependencies = [
     "whitenoise==6.11.0",
     "django-anymail[brevo]==14.0",
     "stripe==14.3.0",
+    "openai>=2.16.0",
 ]
 
 [dependency-groups]

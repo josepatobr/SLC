@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "upload",
     "users",
     "home",
+    "ia",
 ]
 
 MIDDLEWARE = [
@@ -225,3 +226,6 @@ else:
 KEY_PUBLIC_STRIPE = os.getenv("KEY_PUBLIC_STRIPE")
 KEY_SECRET_STRIPE = os.getenv("KEY_SECRET_STRIPE")
 ENDPOINT_SECRET = os.getenv("ENDPOINT_SECRET")
+
+# OPEN IA
+SECRET_KEY_OPENIA = os.getenv("SECRET_KEY_OPENIA")

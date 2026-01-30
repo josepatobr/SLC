@@ -4,20 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0003_remove_customuser_username'),
+        ("users", "0003_remove_customuser_username"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customuser',
-            name='stripe_customer_id',
+            model_name="customuser",
+            name="stripe_customer_id",
             field=models.CharField(blank=True, max_length=100, null=True, unique=True),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='user_status',
-            field=models.CharField(choices=[('user_comum', 'usuario comum, ainda sem pagar'), ('beta_test', 'usuario de testes'), ('user_vip', 'usuario vip')], default='user_comum', max_length=20),
+            model_name="customuser",
+            name="user_status",
+            field=models.CharField(
+                choices=[
+                    ("user_comum", "usuario comum, ainda sem pagar"),
+                    ("beta_test", "usuario de testes"),
+                    ("user_vip", "usuario vip"),
+                ],
+                default="user_comum",
+                max_length=20,
+            ),
         ),
     ]
