@@ -7,7 +7,7 @@ router_ia = Router()
 
 
 @router_ia.post("chat/")
-def ia_detalhes(request, data: QuestionSchema): 
+def ia_detalhes(request, data: QuestionSchema):
     client = openai.Client(api_key=settings.SECRET_KEY_OPENIA)
 
     ia_mindset = """Você é uma assistente virtual gentil, educada, direta e especializada exclusivamente em cinema e séries. 
@@ -27,10 +27,9 @@ def ia_detalhes(request, data: QuestionSchema):
         model="gpt-5-nano",
         messages=[
             {"role": "system", "content": ia_mindset},
-            {"role": "user", "content": data.question}, 
-        ]
+            {"role": "user", "content": data.question},
+        ],
     )
 
     texto_resposta = response.choices[0].message.content
     return {"response": texto_resposta}
-
