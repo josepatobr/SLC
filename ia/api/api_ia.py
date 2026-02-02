@@ -1,4 +1,4 @@
-from api.schemas import QuestionSchema
+from ia.api.schemas import QuestionSchema
 from django.conf import settings
 from ninja import Router
 import openai
