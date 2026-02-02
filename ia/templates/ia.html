@@ -4,12 +4,11 @@
 {% load static %}
 {% block 'title' %}chat IA{% endblock 'title' %}
 
-
 {% block 'body' %}
     <div class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
         <div class="bg-gray-800 border border-gray-700 w-full max-w-2xl h-[32rem] rounded-xl shadow-2xl flex flex-col overflow-hidden">   
             
-            <div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+            <div class="flex-1 p-6 overflow-y-auto custom-scrollbar" id="chat-container">
                 {% if response %}
                     <div class="space-y-4">
                         <div class="flex items-center gap-2">
@@ -17,7 +16,7 @@
                             <h3 class="text-gray-400 uppercase tracking-widest text-xs font-bold">Resposta da Assistente</h3>
                         </div>
                         <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600 text-gray-200 leading-relaxed">
-                            {{ response }}
+                            {{ response|linebreaks }} {# Adicionado linebreaks para respeitar parágrafos da IA #}
                         </div>
                     </div>
                 {% else %}
@@ -26,20 +25,30 @@
                         <p class="text-sm">Faça uma pergunta abaixo.</p>
                     </div>
                 {% endif %}
+                
+                <div id="loading" class="hidden space-y-4 mt-4">
+                    <div class="flex items-center gap-2">
+                        <span class="h-2 w-2 bg-yellow-500 rounded-full animate-bounce"></span>
+                        <p class="text-gray-400 text-xs italic">Consultando o roteiro...</p>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-gray-800 p-4 border-t border-gray-700">
-                <form class="flex gap-2" method="POST">
+                <form class="flex gap-2" method="POST" id="chat-form">
                     {% csrf_token %} 
                     <input 
+                        id="user-input"
                         type="text" 
                         name="question" 
+                        required
                         placeholder="Qual sua dúvida sobre filmes e séries?"
                         class="flex-1 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none transition-all placeholder-gray-400"
                     >
                     <button 
+                        id="submit-btn"
                         type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors focus:ring-4 focus:ring-blue-800"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors focus:ring-4 focus:ring-blue-800 disabled:opacity-50"
                     >
                         Enviar
                     </button>
@@ -47,4 +56,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const btn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading');
+
+        form.onsubmit = function() {
+            btn.disabled = true;
+            btn.innerText = "Aguarde...";
+            loading.classList.remove('hidden');
+        };
+    </script>
 {% endblock 'body' %}
