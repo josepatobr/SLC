@@ -4,6 +4,12 @@
 {% load static %}
 {% block 'title' %}chat IA{% endblock 'title' %}
 
+
+{% block 'extra_head' %}
+    <script src="{% static 'js/ia.js' %}"></script>
+{% endblock 'extra_head' %}
+
+
 {% block 'body' %}
     <div class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
         <div class="bg-gray-800 border border-gray-700 w-full max-w-2xl h-[32rem] rounded-xl shadow-2xl flex flex-col overflow-hidden">   
@@ -16,7 +22,7 @@
                             <h3 class="text-gray-400 uppercase tracking-widest text-xs font-bold">Resposta da Assistente</h3>
                         </div>
                         <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600 text-gray-200 leading-relaxed">
-                            {{ response|linebreaks }} {# Adicionado linebreaks para respeitar parágrafos da IA #}
+                            {{ response|linebreaks }}
                         </div>
                     </div>
                 {% else %}
@@ -29,16 +35,16 @@
                 <div id="loading" class="hidden space-y-4 mt-4">
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 bg-yellow-500 rounded-full animate-bounce"></span>
-                        <p class="text-gray-400 text-xs italic">Consultando o roteiro...</p>
+                        <p class="text-gray-400 text-xs italic">digitando...</p>
                     </div>
                 </div>
             </div>
 
             <div class="bg-gray-800 p-4 border-t border-gray-700">
-                <form class="flex gap-2" method="POST" id="chat-form">
+                <form class="flex gap-2" id="chat-form">
                     {% csrf_token %} 
                     <input 
-                        id="user-input"
+                        id="chat-input"
                         type="text" 
                         name="question" 
                         required
@@ -56,16 +62,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        const form = document.getElementById('chat-form');
-        const btn = document.getElementById('submit-btn');
-        const loading = document.getElementById('loading');
-
-        form.onsubmit = function() {
-            btn.disabled = true;
-            btn.innerText = "Aguarde...";
-            loading.classList.remove('hidden');
-        };
-    </script>
 {% endblock 'body' %}
