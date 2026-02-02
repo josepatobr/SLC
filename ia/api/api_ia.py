@@ -1,15 +1,15 @@
-from django.shortcuts import render
+from api.schemas import QuestionSchema
 from django.conf import settings
 from ninja import Router
 import openai
-
 
 router_ia = Router()
 
 
 @router_ia.post("chat/")
-def support_ia(request):
-    question_text = ""
+def ia_detalhes(request, data: QuestionSchema): 
+    client = openai.Client(api_key=settings.SECRET_KEY_OPENIA)
+
     ia_mindset = """Você é uma assistente virtual gentil, educada, direta e especializada exclusivamente em cinema e séries. 
 
                     Regras de comportamento:
@@ -23,20 +23,14 @@ def support_ia(request):
                     8. caso ele pergunte sobre um filme especifico, fale o nome do diretor e do ator principal
                  """
 
-    if request.method == "POST":
-        user_question = request.POST.get("question")
+    response = client.chat.completions.create(
+        model="gpt-5-nano",
+        messages=[
+            {"role": "system", "content": ia_mindset},
+            {"role": "user", "content": data.question}, 
+        ]
+    )
 
-        if user_question:
-            client = openai.Client(api_key=settings.SECRET_KEY_OPENIA)
+    texto_resposta = response.choices[0].message.content
+    return {"response": texto_resposta}
 
-            prompt = [
-                {"role": "system", "content": ia_mindset},
-                {"role": "user", "content": user_question},
-            ]
-
-            response = client.chat.completions.create(
-                messages=prompt, model="gpt-5-nano"
-            )
-
-            question_text = response.choices[0].message.content
-    return render(request, "ia.html", {"response": question_text})

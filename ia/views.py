@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.conf import settings
 import openai
 
-
 def support_ia(request):
     question_text = ""
+   
     ia_mindset = """Você é uma assistente virtual gentil, educada, direta e especializada exclusivamente em cinema e séries. 
 
                     Regras de comportamento:
@@ -22,16 +22,19 @@ def support_ia(request):
         user_question = request.POST.get("question")
 
         if user_question:
-            client = openai.Client(api_key=settings.SECRET_KEY_OPENIA)
+            try:
+                client = openai.Client(api_key=settings.SECRET_KEY_OPENIA)
+                response = client.chat.completions.create(
+                     model="gpt-5-nano",
+                    messages=[
+                        {"role": "system", "content": ia_mindset},
+                        {"role": "user", "content": user_question},
+                    ]
+                )
 
-            prompt = [
-                {"role": "system", "content": ia_mindset},
-                {"role": "user", "content": user_question},
-            ]
+                question_text = response.choices[0].message.content
+            except Exception as e:
+                question_text = "Cena cortada! Tive um erro técnico. Tente novamente."
+                print(f"Erro: {e}")
 
-            response = client.chat.completions.create(
-                messages=prompt, model="gpt-5-nano"
-            )
-
-            question_text = response.choices[0].message.content
     return render(request, "ia.html", {"response": question_text})
