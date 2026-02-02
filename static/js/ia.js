@@ -9,14 +9,14 @@ const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
         const mensagem = inputMensagem.value;
         if (!mensagem.trim()) return;
         
-        fetch("/chat/", {
+        fetch("api/chat/", {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken, 
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    'message': mensagem
+                    'question': mensagem
                 })
             })
             .then(res => {
@@ -28,7 +28,7 @@ const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
             .then(data => {
                 console.log('Resposta da IA:', data);
                 const chatLog = document.getElementById('chat-container');
-                chatLog.innerHTML += `<p><b>IA:</b> ${data.message}</p>`;
+                chatLog.innerHTML += `<p><b>IA:</b> ${data.question}</p>`;
                 inputMensagem.value = '';
             })
             .catch(err => {
@@ -39,15 +39,5 @@ const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
     
 
 
-
-const form = document.getElementById('chat-form');
-const btn = document.getElementById('submit-btn');
-const loading = document.getElementById('loading');
-
-    form.onsubmit = function() {
-        btn.disabled = true;
-        btn.innerText = "Aguarde...";
-        loading.classList.remove('hidden');
-    };
 
 

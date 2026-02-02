@@ -62,4 +62,16 @@
             </div>
         </div>
     </div>
+    <script>
+        const form = document.getElementById('chat-form');
+        const btn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading');
+
+            form.onsubmit = function() {
+                btn.disabled = true;
+                btn.innerText = "Aguarde...";
+                loading.classList.remove('hidden');
+            };
+
+    </script>
 {% endblock 'body' %}
