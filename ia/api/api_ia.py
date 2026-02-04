@@ -3,6 +3,7 @@ from django.conf import settings
 from ninja import Router
 import openai
 
+
 router_ia = Router()
 
 
@@ -22,14 +23,17 @@ def ia_detalhes(request, data: QuestionSchema):
                     7. caso ele pergunte uma indicação de um filme ou serie, fale o top 3 de cada genero.
                     8. caso ele pergunte sobre um filme especifico, fale o nome do diretor e do ator principal
                  """
+    try:
+        response = client.chat.completions.create(
+            model="gpt-5-nano",
+            messages=[
+                {"role": "system", "content": ia_mindset},
+                {"role": "user", "content": data.question},
+            ],
+        )
 
-    response = client.chat.completions.create(
-        model="gpt-5-nano",
-        messages=[
-            {"role": "system", "content": ia_mindset},
-            {"role": "user", "content": data.question},
-        ],
-    )
+        texto_resposta = response.choices[0].message.content
+        return {"response": texto_resposta}
 
-    texto_resposta = response.choices[0].message.content
-    return {"response": texto_resposta}
+    except Exception as e:
+        return {"response": f"erro, falha no sistema: {str(e)}"}
