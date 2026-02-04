@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (placeholder) placeholder.remove();
 
             try {
-                const response = await fetch("ia/api/chat/", {
+                const response = await fetch("/api/ia/chat/", {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken,
