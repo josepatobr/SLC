@@ -7,26 +7,31 @@
 
 <br>
 {% block 'body' %}
-    <body class="bg-gray-900 min-h-screen">
-        <div class="p-4 max-w-xl flex justify-center items-center size-full mx-auto"> 
-            <div class="bg-gray-700 rounded-xl shadow-2xl p-4 space-y-5">                
-                <div class="text-2xl text-center font-extrabold text-white border-b p-2">
-                    CADASTRO
+    <div class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
+        <div class="w-lg"> 
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-gray-700/50 p-8 text-center border-b border-gray-700">
+                    <h1 class="text-3xl font-bold text-white tracking-tight">
+                        {% trans "Bem-vindo" %}
+                    </h1>
+                    <p class="text-gray-400 mt-2 text-sm">Preencha os dados abaixo para abrir uma conta</p>
                 </div> 
-            
-                <div class="text-white p-6 text-2xl space-y-5 mx-auto text-right">
-           
+                <div class="p-8">
                     {% if not SOCIALACCOUNT_ONLY %}
                         {% url 'account_signup' as action_url %}
                         {% element form form=form method="post" action=action_url tags="entrance,signup" %}
                             {% slot body %}
-                                {% csrf_token %}
-                                {% element fields form=form unlabeled=True %}
-                                {% endelement %}
-                                {{ redirect_field }}
+                                <div class="space-y-4 text-white"></div>
+                                    {% csrf_token %}
+                                    <div class="allauth-form-fields"></div>
+                                        {% element fields form=form unlabeled=True %}
+                                        {% endelement %}
+                                    </div>
+                                    {{ redirect_field }}
                             {% endslot %}
+                                </div>
                             {% slot actions %}
-                                {% element button tags="prominent,signup" type="submit" %}
+                               {% element button tags="prominent,signup" type="submit" %}
                                     {% trans "Cadastrar" %}
                                 {% endelement %}
                             {% endslot %}
@@ -40,17 +45,19 @@
                         </a>
                     {% endsetvar %}
 
-                    {% element p %}
-                        {% blocktranslate %}Já tem uma conta? entra nessa aba: {{ link }}Logar{{ end_link }}.{% endblocktranslate %}
-                    {% endelement %}
+                    <div class="mt-6 text-center">
+                        <a href="{{ login_url }}" class="text-sm text-gray-400 hover:text-white transition">
+                            ja tem uma conta? <span class="text-blue-400 font-semibold">Entrar</span>
+                        </a>
+                    </div>
+
                     <div class="text-center text-white">
                         {% if SOCIALACCOUNT_ENABLED %}
                             {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
                         {% endif %}
                     </div>
                 </div>
-
             </div>
         </div>
-    </body>
+    </div>
 {% endblock 'body' %}

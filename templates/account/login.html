@@ -3,79 +3,80 @@
 {% load allauth account %}
 {% load static %}
 
+
 {% block 'title' %}{% trans "Login" %}{% endblock 'title' %}
 
-{% block 'body' %}
-<div class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
-    <div class="w-lg"> 
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
-            
-            <div class="bg-gray-700/50 p-8 text-center border-b border-gray-700">
-                <h1 class="text-3xl font-bold text-white tracking-tight">
-                    {% trans "Bem-vindo" %}
-                </h1>
-                <p class="text-gray-400 mt-2 text-sm">Entre com seus dados para acessar</p>
-            </div> 
 
-            <div class="p-8">
-                {% url 'account_login' as login_url %}
-                {% element form form=form method="post" action=login_url tags="entrance,login" %}
-                    {% slot body %}
-                        <div class="space-y-4 text-white">
-                            {% csrf_token %}
-                            <div class="allauth-form-fields">
-                                {% element fields form=form unlabeled=True %}
+{% block 'body' %}
+    <div class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
+        <div class="w-lg"> 
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-gray-700/50 p-8 text-center border-b border-gray-700">
+                    <h1 class="text-3xl font-bold text-white tracking-tight">
+                        {% trans "Bem-vindo" %}
+                    </h1>
+                    <p class="text-gray-400 mt-2 text-sm">Entre com seus dados para acessar</p>
+                </div> 
+
+                <div class="p-8">
+                    {% url 'account_login' as login_url %}
+                    {% element form form=form method="post" action=login_url tags="entrance,login" %}
+                        {% slot body %}
+                            <div class="space-y-4 text-white">
+                                {% csrf_token %}
+                                <div class="allauth-form-fields">
+                                    {% element fields form=form unlabeled=True %}
+                                    {% endelement %}
+                                </div>
+                                {{ redirect_field }}
+                            </div>
+                        {% endslot %}
+
+                        {% slot actions %}
+                            <div class="mt-6">
+                                {% element button type="submit" tags="prominent,login" class="w-full text-white hover:text-green-600 font-bold py-3 transition duration-300 shadow-lg" %}
+                                    {% trans "Entrar na conta" %}
                                 {% endelement %}
                             </div>
-                            {{ redirect_field }}
-                        </div>
-                    {% endslot %}
+                        {% endslot %}
+                    {% endelement %}
 
-                    {% slot actions %}
-                        <div class="mt-6">
-                            {% element button type="submit" tags="prominent,login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 shadow-lg" %}
-                                {% trans "Entrar na conta" %}
-                            {% endelement %}
-                        </div>
-                    {% endslot %}
-                {% endelement %}
-
-                <div class="mt-6 text-center">
-                    <a href="{{ signup_url }}" class="text-sm text-gray-400 hover:text-white transition">
-                        Ainda não tem conta? <span class="text-blue-400 font-semibold">Cadastre-se</span>
-                    </a>
-                </div>
-
-                {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-                    <div class="relative my-8">
-                        <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-gray-700"></span></div>
-                        <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-800 px-2 text-gray-500 underline">Ou continue com</span></div>
+                    <div class="mt-6 text-center">
+                        <a href="{{ signup_url }}" class="text-sm text-gray-400 hover:text-white transition">
+                            Ainda não tem uma conta? <span class="text-blue-400 font-semibold">Cadastre-se</span>
+                        </a>
                     </div>
 
-                    <div class="space-y-3">
-                        {% if PASSKEY_LOGIN_ENABLED %}
-                            {% element button type="submit" form="mfa_login" id="passkey_login" tags="outline" class="w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition" %}
-                                {% trans "Sign in with a passkey" %}
-                            {% endelement %}
-                        {% endif %}
-                        
-                        {% if LOGIN_BY_CODE_ENABLED %}
-                            <a href="{{ request_login_code_url }}" class="block text-center w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition text-sm">
-                                {% trans "Receber código por e-mail" %}
-                            </a>
-                        {% endif %}
+                    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
+                        <div class="relative my-8">
+                            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-gray-700"></span></div>
+                            <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-800 px-2 text-gray-500 underline">Ou continue com</span></div>
+                        </div>
+
+                        <div class="space-y-3">
+                            {% if PASSKEY_LOGIN_ENABLED %}
+                                {% element button type="submit" form="mfa_login" id="passkey_login" tags="outline" class="w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition" %}
+                                    {% trans "Sign in with a passkey" %}
+                                {% endelement %}
+                            {% endif %}
+                            
+                            {% if LOGIN_BY_CODE_ENABLED %}
+                                <a href="{{ request_login_code_url }}" class="block text-center w-full border border-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition text-sm">
+                                    {% trans "Receber código por e-mail" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if SOCIALACCOUNT_ENABLED %}
+                    <div class="bg-gray-700/30 p-6 text-center border-t border-gray-700">
+                        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
                     </div>
                 {% endif %}
             </div>
-
-            {% if SOCIALACCOUNT_ENABLED %}
-                <div class="bg-gray-700/30 p-6 text-center border-t border-gray-700">
-                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-                </div>
-            {% endif %}
         </div>
     </div>
-</div>
 {% endblock 'body' %}
 
 {% block extra_body %}
