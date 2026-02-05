@@ -31,12 +31,12 @@
                     </form>
 
                     <el-dropdown class="inline-block">
-                        <button class=" hover:text-blue-600 duration-300 inline-flex w-full justify-center gap-x-1.5  bg-trasparent px-3 py-2 text-sm font-semibold text-white ">
+                        <button class="hover:text-blue-600 duration-300 inline-flex w-full justify-center gap-x-1.5  bg-trasparent px-3 py-2 text-sm font-semibold text-white">
                             Menu
                         </button>
 
-                        <el-menu anchor="bottom end" popover class="w-40 bg-gray-800  rounded-md  transition ">
-                            <div class="py-1">
+                        <el-menu anchor="bottom center" popover class="w-60 bg-gray-800  rounded-md  transition ">
+                            <div class="py-2">
                                 {% if user.is_authenticated %}
                                     <a href="{% url 'profile' user.id %}" class="flex text-center text-white w-56 bg-gray-800  items-center justify-center hover:text-blue-600 duration-300">Perfil</a>
                                     <a href="{% url 'checkout' %}" class="flex text-center text-white w-56 bg-gray-800  items-center justify-center hover:text-blue-600 duration-300">Assinatura VIP</a>

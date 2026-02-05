@@ -34,9 +34,14 @@
 
                         {% slot actions %}
                             <div class="mt-6">
-                                {% element button type="submit" tags="prominent,login" class="w-full text-white hover:text-green-600 font-bold py-3 transition duration-300 shadow-lg" %}
-                                    {% trans "Entrar na conta" %}
-                                {% endelement %}
+                              {% slot actions %}
+                                <div class="flex justify-center w-full">
+                                    <button class="border-2 border-gray-700  flex text-green-600 bg-transparent hover:bg-green-600 hover:text-white duration-300 rounded-md px-6 py-2 font-medium" type="{{ attrs.type }}">
+                                        logar
+                                        {% slot %}{% endslot %}
+                                    </button>
+                                </div>
+                            {% endslot %}
                             </div>
                         {% endslot %}
                     {% endelement %}

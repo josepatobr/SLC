@@ -21,9 +21,9 @@
                         {% url 'account_signup' as action_url %}
                         {% element form form=form method="post" action=action_url tags="entrance,signup" %}
                             {% slot body %}
-                                <div class="space-y-4 text-white"></div>
+                                <div class="text-white">
                                     {% csrf_token %}
-                                    <div class="allauth-form-fields"></div>
+                                    <div class="allauth-form-fields">
                                         {% element fields form=form unlabeled=True %}
                                         {% endelement %}
                                     </div>
@@ -31,9 +31,12 @@
                             {% endslot %}
                                 </div>
                             {% slot actions %}
-                               {% element button tags="prominent,signup" type="submit" %}
-                                    {% trans "Cadastrar" %}
-                                {% endelement %}
+                                <div class="flex justify-center w-full">
+                                    <button class="border-2 border-gray-700  flex text-green-600 bg-transparent hover:bg-green-600 hover:text-white duration-300 rounded-md px-6 py-2 font-medium" type="{{ attrs.type }}">
+                                        cadastrar
+                                        {% slot %}{% endslot %}
+                                    </button>
+                                </div>
                             {% endslot %}
                         {% endelement %}
                     {% endif %}
@@ -56,6 +59,7 @@
                             {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
                         {% endif %}
                     </div>
+                    <br>
                 </div>
             </div>
         </div>
