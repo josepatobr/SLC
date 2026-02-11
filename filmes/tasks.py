@@ -1,14 +1,13 @@
 from filmes.services.sprites import (
-    process_video_to_hls,
     get_video_duration,
     generate_video_sprites,
-    get_video_tracks_metadata,
+    _upload_hls_files,
 )
 from celery.exceptions import SoftTimeLimitExceeded
-from .models import Video, VideoTrack
-import logging, shutil, tempfile
+import logging, shutil, tempfile, os, math
 from celery import shared_task
-from pathlib import Path
+from datetime import timedelta
+import subprocess
 
 
 logger = logging.getLogger(__name__)
@@ -17,122 +16,158 @@ logger = logging.getLogger(__name__)
 @shared_task(
     name="calculate_video_duration", bind=True, max_retries=3, default_retry_delay=60
 )
-def calculate_video_duration(self, video_id):
+def calculate_video_duration(self, object_id, model_type):
+    from .models import Movies, Episode
+
     try:
-        video = Video.objects.get(id=video_id)
-        if not video.source_file or not video.source_file.url:
-            logger.warning(f"Vídeo {video_id} não possui arquivo de origem.")
+        if model_type == "movie":
+            obj = Movies.objects.get(id=object_id)
+            file_field = obj.file_movie
+        else:
+            obj = Episode.objects.get(id=object_id)
+            file_field = obj.file_episode
+
+        if not file_field or not file_field.path:
             return
 
-        duration = get_video_duration(video.source_file.url)
+        duration = get_video_duration(file_field.path)
 
         if duration > 0:
-            video.duration = duration
-            video.save(update_fields=["duration"])
-            logger.info(f"Duração do vídeo {video_id} atualizada para {duration}s")
-        else:
-            logger.error(f"Não foi possível calcular a duração para o vídeo {video_id}")
-    except Video.DoesNotExist:
-        logger.error(f"Vídeo com ID {video_id} não existe no banco de dados.")
+            obj.duration_all = timedelta(seconds=duration)
+            obj.save(update_fields=["duration_all"])
+            logger.info(f"Duração de {model_type} {object_id} atualizada.")
+
+    except (Movies.DoesNotExist, Episode.DoesNotExist):
+        logger.error(f"{model_type} com ID {object_id} não encontrado.")
     except Exception as e:
-        logger.exception(f"Erro ao processar vídeo {video_id}")
         raise self.retry(exc=e)
 
 
-@shared_task(name="process_video_hls_task", soft_time_limit=14400, time_limit=14500)
-def process_video_hls_task(self, video_id):
+@shared_task(
+    name="process_video_hls_task", bind=True, soft_time_limit=14400, time_limit=14500
+)
+def process_video_hls_task(self, object_id, model_type):
+    from .models import Movies, Episode
+
     try:
-        video = Video.objects.get(id=video_id)
-    except Video.DoesNotExist as e:
-        logger.exception("Video with ID %s does not exist", video_id, exc_info=e)
+        if model_type == "movie":
+            obj = Movies.objects.get(id=object_id)
+            input_path = obj.file_movie.path
+        else:
+            obj = Episode.objects.get(id=object_id)
+            input_path = obj.file_episode.path
+    except (Movies.DoesNotExist, Episode.DoesNotExist):
         return
 
     temp_dir = tempfile.mkdtemp()
+
     try:
-        process_video_to_hls(video, temp_dir)
-        discover_tracks_task.delay(video_id)
-    except SoftTimeLimitExceeded as e:
-        logger.exception("SoftTimeLimitExceeded for video %s", video_id, exc_info=e)
-        shutil.rmtree(temp_dir, ignore_errors=True)
-        video.status = Video.Status.FAILED
-        video.processing_error = f"SoftTimeLimitExceeded: {e}"
-        video.save(update_fields=["status", "processing_error"])
+        hls_playlist_name = "playlist.m3u8"
+        output_hls_path = os.path.join(temp_dir, hls_playlist_name)
+
+        command = [
+            "ffmpeg",
+            "-i",
+            input_path,
+            "-profile:v",
+            "baseline",
+            "-level",
+            "3.0",
+            "-s",
+            "1280x720",
+            "-start_number",
+            "0",
+            "-hls_time",
+            "10",
+            "-hls_list_size",
+            "0",
+            "-f",
+            "hls",
+            output_hls_path,
+        ]
+
+        subprocess.run(command, check=True)
+
+        cloud_hls_path = _upload_hls_files(obj, temp_dir)
+
+        if cloud_hls_path:
+            obj.hls_file = cloud_hls_path
+            obj.save(update_fields=["hls_file"])
+            logger.info(f"HLS enviado para a nuvem com sucesso: {cloud_hls_path}")
+        else:
+            logger.error("Falha ao fazer upload dos arquivos HLS para a nuvem.")
+
     except Exception as e:
-        logger.exception("Unexpected error processing video %s", video_id, exc_info=e)
-        shutil.rmtree(temp_dir, ignore_errors=True)
-        video.status = Video.Status.FAILED
-        video.processing_error = str(e)
-        video.save(update_fields=["status", "processing_error"])
+        logger.exception("Erro crítico no processamento HLS do objeto %s", object_id)
+    finally:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
 
 
-@shared_task(name="generate_video_sprites_task", soft_time_limit=1800, time_limit=1920)
-def generate_video_sprites_task(self, video_id):
+@shared_task(
+    name="generate_video_sprites_task", bind=True, soft_time_limit=1800, time_limit=1920
+)
+def generate_video_sprites_task(self, object_id, model_type):
+    from .models import Movies, Episode, VideoSprite
+
     try:
-        video = Video.objects.get(id=video_id)
-    except Video.DoesNotExist as e:
-        logger.exception("Video with ID %s does not exist", video_id, exc_info=e)
+        if model_type == "movie":
+            obj = Movies.objects.get(id=object_id)
+            input_path = obj.file_movie.path
+            field_name = obj.file_movie.name
+        else:
+            obj = Episode.objects.get(id=object_id)
+            input_path = obj.file_episode.path
+            field_name = obj.file_episode.name
+    except (Movies.DoesNotExist, Episode.DoesNotExist):
         return
 
     temp_dir = tempfile.mkdtemp()
+
     try:
-        generate_video_sprites(video, temp_dir)
-    except SoftTimeLimitExceeded as e:
-        logger.exception("SoftTimeLimitExceeded for video %s", video_id, exc_info=e)
-        shutil.rmtree(temp_dir, ignore_errors=True)
-        video.status = Video.Status.FAILED
-        video.processing_error = f"SoftTimeLimitExceeded: {e}"
-        video.save(update_fields=["status", "processing_error"])
-    except Exception as e:
-        logger.exception("Unexpected error processing video %s", video_id, exc_info=e)
-        shutil.rmtree(temp_dir, ignore_errors=True)
-        video.status = Video.Status.FAILED
-        video.processing_error = str(e)
-        video.save(update_fields=["status", "processing_error"])
+        duration = get_video_duration(input_path)
 
+        if duration <= 0:
+            return
 
-@shared_task(name="discover_tracks_task")
-def discover_tracks_task(self, video_id):
-    try:
-        video = Video.objects.get(id=video_id)
-    except Video.DoesNotExist as e:
-        logger.exception("Video with ID %s does not exist", video_id, exc_info=e)
-        return
+        generate_video_sprites(obj, input_path, temp_dir)
 
-    metadata = get_video_tracks_metadata(video.source_file.url)
-    if not metadata:
-        return
+        final_dir = os.path.join(os.path.dirname(input_path), "sprites")
+        os.makedirs(final_dir, exist_ok=True)
 
-    for stream in metadata["audio"]:
-        track, created = VideoTrack.objects.update_or_create(
-            video=video,
-            language=stream["language"],
-            defaults={
-                "source_audio_index": stream["index"],
-                "label": stream["label"],
-            },
-        )
-        if created or not track.audio_playlist:
-            process_track_task.delay(track.id)
+        for filename in os.listdir(temp_dir):
+            shutil.move(
+                os.path.join(temp_dir, filename), os.path.join(final_dir, filename)
+            )
 
-    for stream in metadata["subtitle"]:
-        track, created = VideoTrack.objects.update_or_create(
-            video=video,
-            language=stream["language"],
-            defaults={
-                "source_subtitle_index": stream["index"],
-                "label": stream["label"],
-            },
-        )
-        if created or not track.subtitle_file:
-            process_track_task.delay(track.id)
+            field_dir = os.path.dirname(field_name)
+            relative_image_path = os.path.join(
+                field_dir, "sprites", "sprite.jpg"
+            ).replace("\\", "/")
+            relative_vtt_path = os.path.join(
+                field_dir, "sprites", "thumbnails.vtt"
+            ).replace("\\", "/")
 
+            VideoSprite.objects.update_or_create(
+                movie=obj if model_type == "movie" else None,
+                episode=obj if model_type == "episode" else None,
+                defaults={
+                    "start_time": 0,
+                    "end_time": duration,
+                    "interval": 10,
+                    "columns": 5,
+                    "rows": math.ceil((duration / 10) / 5),
+                    "frame_width": 160,
+                    "image": relative_image_path,
+                },
+            )
 
-@shared_task(name="process_track_task", soft_time_limit=3600, time_limit=3700)
-def process_track_task(self, track_id):
-    try:
-        track = VideoTrack.objects.select_related("video").get(id=track_id)
-    except VideoTrack.DoesNotExist:
-        return
-
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_path = Path(temp_dir)
+            obj.sprite_vtt = relative_vtt_path
+            obj.save(update_fields=["sprite_vtt"])
+    except SoftTimeLimitExceeded:
+        logger.exception(f"Tempo esgotado para gerar sprites de {object_id}")
+    except Exception:
+        logger.exception(f"Erro inesperado nos sprites de {object_id}")
+    finally:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir, ignore_errors=True)

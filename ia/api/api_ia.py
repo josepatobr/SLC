@@ -30,6 +30,7 @@ def ia_detalhes(request, data: QuestionSchema):
                 {"role": "system", "content": ia_mindset},
                 {"role": "user", "content": data.question},
             ],
+            stream=True,
         )
 
         texto_resposta = response.choices[0].message.content

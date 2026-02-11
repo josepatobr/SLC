@@ -1,17 +1,12 @@
-from .tasks import discover_tracks_task, process_track_task, generate_video_sprites_task
-from .models import Video, Episode, VideoTrack, VideoSprite, Movies, Serie
-from django.contrib.contenttypes.models import ContentType
+from .tasks import generate_video_sprites_task, calculate_video_duration
+from .models import Episode, Movies, Series, VideoSprite
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html_join, format_html
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.contrib import admin
 from django.urls import reverse
-from django.db.models import Q
-import contextlib
 
 
-admin.site.register(Movies)
-admin.site.register(Serie)
+admin.site.register(Series)
 admin.site.register(Episode)
 
 
@@ -46,184 +41,59 @@ class VideoSpriteInline(admin.TabularInline):
         return f"{obj.columns}x{obj.rows} ({obj.frame_width}px)"
 
 
-class VideoTrackInline(admin.TabularInline):
-    model = VideoTrack
-    extra = 0
-    show_change_link = True
-    verbose_name = _("Media Track")
-    verbose_name_plural = _("Media Tracks (Audio/Subs)")
-
-    fields = (
-        "active_icons",
-        "language",
-        "label",
-        "is_original",
-        "source_indices_display",
-    )
-    readonly_fields = ("active_icons", "source_indices_display")
-
-    @admin.display(description=_("Status"))
-    def active_icons(self, obj):
-        default_styles = "cursor:help; margin-right:5px"
-        icons_data = []
-        if obj.is_original:
-            icons_data.append(
-                ("⭐", _("Original Track"), default_styles),
-            )
-        else:
-            icons_data.append(
-                ("⭐", _("Non-Original Track"), f"opacity:0.1; {default_styles}"),
-            )
-
-        if obj.audio_playlist:
-            icons_data.append(
-                ("🔊", _("Audio Available"), f"color:blue; {default_styles}"),
-            )
-        else:
-            icons_data.append(
-                (
-                    "🔊",
-                    _("No Audio"),
-                    f"opacity:0.2; filter:grayscale(1); {default_styles}",
-                ),
-            )
-
-        if obj.subtitle_file:
-            icons_data.append(
-                ("📝", _("Subtitle Available"), f"color:green; {default_styles}"),
-            )
-        else:
-            icons_data.append(
-                (
-                    "📝",
-                    _("No Subtitle"),
-                    f"opacity:0.2; filter:grayscale(1); {default_styles}",
-                ),
-            )
-
-        return format_html_join(
-            "",
-            '<span title="{1}" style="{2}">{0}</span>',
-            ((icon, title, style) for icon, title, style in icons_data),
-        )
-
-    @admin.display(description=_("Source Indexes"))
-    def source_indices_display(self, obj):
-        parts_data = []
-        if obj.source_audio_index is not None:
-            parts_data.append(("A:", obj.source_audio_index))
-
-        if obj.source_subtitle_index is not None:
-            parts_data.append(("S:", obj.source_subtitle_index))
-
-        if not parts_data:
-            return "-"
-
-        sep = mark_safe(" <span style='color:#ccc'>|</span> ")
-        return format_html_join(
-            sep,
-            "<b>{0}</b> {1}",
-            ((label, value) for label, value in parts_data),
-        )
-
-
-@admin.register(Video)
+@admin.register(Movies)
 class VideoAdmin(admin.ModelAdmin):
+    inlines = [VideoSpriteInline]
     list_display = (
-        "get_target_name",
-        "get_target_type",
-        "status",
-        "get_duration_fmt",
-        "created_at",
-        "link_to_parent",
+        "title",
+        "status_movie",
+        "duration_in_minutes",
     )
-    list_filter = ("status", "content_type", "created_at")
-    search_fields = ("id", "source_file")
-    readonly_fields = ("id", "created_at", "updated_at", "link_to_parent_large")
-    inlines = [VideoSpriteInline, VideoTrackInline]
-    actions = [
-        "retry_processing",
-        "generate_sprites",
-        "discover_tracks",
-        "process_tracks",
-    ]
+    list_filter = ("status_movie", "gener_movie")
+    search_fields = ("id", "title")
+    readonly_fields = ("id",)
+
+    actions = ["generate_sprites"]
 
     fieldsets = (
         (
-            _("General Information"),
+            None,
             {
-                "fields": (
-                    "id",
-                    "status",
-                    "link_to_parent_large",
-                    "duration",
-                ),
+                "fields": ("id", "status_movie", "duration_all", "sprite_vtt"),
             },
         ),
         (
-            _("Files & Streaming"),
+            "Files & Streaming",
             {
-                "fields": (
-                    "source_file",
-                    "hls_playlist",
-                ),
-                "description": _(
-                    "Paths to the source file and the generated HLS master playlist.",
-                ),
-            },
-        ),
-        (
-            _("Internal References"),
-            {
-                "classes": ("collapse",),
-                "fields": ("content_type", "object_id"),
-            },
-        ),
-        (
-            _("Logs & Debug"),
-            {
-                "classes": ("collapse",),
-                "fields": (
-                    "processing_error",
-                    "created_at",
-                    "updated_at",
-                ),
+                "fields": ("file_movie", "hls_file"),
+                "description": "Caminhos para o arquivo original e playlist HLS.",
             },
         ),
     )
+
+    @admin.action(description="Gerar Sprite Sheets")
+    def generate_sprites(self, request, queryset):
+        for video in queryset:
+            calculate_video_duration.delay(video.id, "movie")
+        self.message_user(
+            request, f"{queryset.count()} vídeos enviados para processamento."
+        )
+
+    @admin.action(description=_("Generate Sprite Sheets"))
+    def generate_sprites(self, request, queryset):
+        for video in queryset:
+            model_type = "movie" if video.content_type.model == "movies" else "episode"
+            generate_video_sprites_task.delay(video.id, model_type)
+
+        self.message_user(
+            request,
+            _("%s vídeos enviados para geração de sprites.") % queryset.count(),
+        )
 
     def get_queryset(self, request):
         return (
             super().get_queryset(request).prefetch_related("content_object", "sprites")
         )
-
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super().get_search_results(
-            request,
-            queryset,
-            search_term,
-        )
-
-        if not search_term:
-            return queryset, use_distinct
-
-        with contextlib.suppress(Exception):
-            title_ct = ContentType.objects.get_for_model(Movies)
-            episode_ct = ContentType.objects.get_for_model(Serie)
-
-            matching_titles = Movies.objects.filter(
-                title__icontains=search_term
-            ).values_list("id", flat=True)
-            matching_episodes = Serie.objects.filter(
-                season__title__title__icontains=search_term
-            ).values_list("id", flat=True)
-
-            queryset = queryset | self.model.objects.filter(
-                (Q(content_type=title_ct) & Q(object_id__in=matching_titles))
-                | (Q(content_type=episode_ct) & Q(object_id__in=matching_episodes))
-            )
-
-        return queryset, use_distinct
 
     @admin.display(description=_("Content Name"))
     def get_target_name(self, obj):
@@ -277,11 +147,6 @@ class VideoAdmin(admin.ModelAdmin):
             )
         return _("Orphaned Video")
 
-    @admin.action(description=_("Retry Processing"))
-    def retry_processing(self, request, queryset):
-        count = queryset.update(status=Video.Status.PENDING)
-        self.message_user(request, _("%s videos queued for reprocessing.") % count)
-
     @admin.action(description=_("Generate Sprite Sheets"))
     def generate_sprites(self, request, queryset):
         for video in queryset:
@@ -291,96 +156,61 @@ class VideoAdmin(admin.ModelAdmin):
             _("%s videos queued for sprite generation.") % queryset.count(),
         )
 
-    @admin.action(description=_("Discover Tracks"))
-    def discover_tracks(self, request, queryset):
-        for video in queryset:
-            discover_tracks_task.delay(video.id)
-        self.message_user(
-            request,
-            _("%s videos queued for track discovery.") % queryset.count(),
-        )
-
-    @admin.action(description=_("Process Tracks"))
-    def process_tracks(self, request, queryset):
-        for video in queryset:
-            for track in video.tracks.all():
-                process_track_task.delay(track.id)
-        self.message_user(
-            request,
-            _("%s videos queued for track processing.") % queryset.count(),
-        )
-
 
 @admin.register(VideoSprite)
 class VideoSpriteAdmin(admin.ModelAdmin):
     list_display = (
         "sprite_preview_large",
-        "video_link",
         "time_range",
         "interval",
         "dimensions",
-        "grid_layout",
-        "created_at",
     )
-    list_filter = ("interval", "created_at")
-    search_fields = ("video__id",)
-    readonly_fields = ("created_at", "sprite_preview_detail")
+
+    list_filter = ("interval",)
+    search_fields = ("video__title", "video__id")
+    readonly_fields = ("sprite_preview_detail",)
 
     fieldsets = (
         (
-            _("File Info"),
+            "File Info",
             {
                 "fields": ("video", "image", "sprite_preview_detail"),
             },
         ),
         (
-            _("Timing"),
+            "Timing",
             {
                 "fields": (("start_time", "end_time"), "interval"),
             },
         ),
         (
-            _("Technical Dimensions"),
+            "Technical Dimensions",
             {
-                "fields": (
-                    ("frame_width", "frame_height"),
-                    ("columns", "rows"),
-                ),
+                "fields": (("frame_width", "frame_height"), ("columns", "rows")),
             },
         ),
     )
 
-    @admin.display(description=_("Preview"))
+    @admin.display(description="Preview")
     def sprite_preview_large(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" style="max-height: 50px; max-width: 100px; object-fit: cover;" />',  # noqa: E501
-                obj.image.url,
+                '<img src="{}" style="max-height: 50px;"/>', obj.image.url
             )
         return "-"
 
-    @admin.display(description=_("Full Preview"))
+    @admin.display(description="Full Preview")
     def sprite_preview_detail(self, obj):
         if obj.image:
             return format_html(
-                '<a href="{0}" target="_blank"><img src="{0}" style="max-width: 100%; height: auto;" /></a>',  # noqa: E501
-                obj.image.url,
+                '<img src="{}" style="max-width: 300px;"/>', obj.image.url
             )
         return "-"
 
-    @admin.display(description=_("Video"), ordering="video")
-    def video_link(self, obj):
-        url = reverse("admin:videos_video_change", args=[obj.video.id])
-        return format_html('<a href="{}">{}</a>', url, str(obj.video))
-
-    @admin.display(description=_("Time Range"), ordering="start_time")
+    @admin.display(description="Time Range")
     def time_range(self, obj):
         return f"{obj.start_time}s - {obj.end_time}s"
 
-    @admin.display(description=_("Thumb Size"))
+    @admin.display(description="Thumb Size")
     def dimensions(self, obj):
         return f"{obj.frame_width}x{obj.frame_height}px"
-
-    @admin.display(description=_("Grid"))
-    def grid_layout(self, obj):
-        return f"{obj.columns}x{obj.rows}"

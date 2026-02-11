@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
-from .models import Video
+from .models import Movies
 import os
 
 
@@ -34,7 +34,7 @@ def movie(request, id):
         messages.error(request, "Você precisa ser vip para acessar essa area.")
         return redirect("home")
 
-    movie = get_object_or_404(Video, id=id)
+    movie = get_object_or_404(Movies, id=id)
 
     return render(
         request,

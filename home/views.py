@@ -1,4 +1,4 @@
-from filmes.models import Movies, MoviesWatched, Serie, EpisodeWatched
+from filmes.models import Movies, MoviesWatched, Series, EpisodeWatched
 from django.shortcuts import render
 from PIL import Image
 import os
@@ -23,9 +23,8 @@ def home(request):
     else:
         serie_watched_objects = []
 
-    recommended_movies = Movies.objects.order_by("-watch_count")[:20]
 
-    series = Serie.objects.all()
+    series = Series.objects.all()
 
     return render(
         request,
@@ -33,7 +32,6 @@ def home(request):
         {
             "series_watched": serie_watched_objects,
             "movies_watched": movies_watched_objects,
-            "recommended_movies": recommended_movies,
             "serie": series,
         },
     )

@@ -10,9 +10,9 @@ CHUNK_SIZE = 8192
 def stream_video(request, id: int):
     video = None
     if movie := Movies.objects.filter(id=id).first():
-        video = movie.video
+        video = movie.file_movie
     elif episode := Episode.objects.filter(id=id).first():
-        video = episode.video
+        video = episode.file_episode
 
     else:
         return 404, {"detail": "Movie or episode not found."}

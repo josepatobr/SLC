@@ -6,6 +6,7 @@ from ninja import NinjaAPI
 
 
 api = NinjaAPI()
+
 api.add_router("ia/", router_ia)
 api.add_router("payment/", stripe_api)
 api.add_router("movies/", router_movies)
