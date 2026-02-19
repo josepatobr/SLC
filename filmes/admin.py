@@ -1,13 +1,9 @@
 from .tasks import generate_video_sprites_task, calculate_video_duration
-from .models import Episode, Movies, Series, VideoSprite
 from django.utils.translation import gettext_lazy as _
+from .models import Movies, Series, VideoSprite
 from django.utils.html import format_html
 from django.contrib import admin
 from django.urls import reverse
-
-
-admin.site.register(Series)
-admin.site.register(Episode)
 
 
 class VideoSpriteInline(admin.TabularInline):
@@ -42,15 +38,15 @@ class VideoSpriteInline(admin.TabularInline):
 
 
 @admin.register(Movies)
-class VideoAdmin(admin.ModelAdmin):
+class MovieAdmin(admin.ModelAdmin):
     inlines = [VideoSpriteInline]
     list_display = (
-        "title",
+        "title_movie",
         "status_movie",
         "duration_in_minutes",
     )
-    list_filter = ("status_movie", "gener_movie")
-    search_fields = ("id", "title")
+    list_filter = ("status_movie", "gener_movie","title_movie")
+    search_fields = ("id", "title_movie")
     readonly_fields = ("id",)
 
     actions = ["generate_sprites"]
@@ -59,7 +55,7 @@ class VideoAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("id", "status_movie", "duration_all", "sprite_vtt"),
+                "fields": ("id", "title_movie", "status_movie", "duration_all", "sprite_vtt"),
             },
         ),
         (
@@ -82,8 +78,17 @@ class VideoAdmin(admin.ModelAdmin):
     @admin.action(description=_("Generate Sprite Sheets"))
     def generate_sprites(self, request, queryset):
         for video in queryset:
-            model_type = "movie" if video.content_type.model == "movies" else "episode"
-            generate_video_sprites_task.delay(video.id, model_type)
+            generate_video_sprites_task.delay(video.id, "movie")
+
+        self.message_user(
+            request,
+            _("%s vídeos enviados para geração de sprites.") % queryset.count(),
+        )
+
+    @admin.action(description=_("Generate Sprite Sheets"))
+    def generate_sprites(self, request, queryset):
+        for video in queryset:
+            generate_video_sprites_task.delay(video.id, "episode")
 
         self.message_user(
             request,
@@ -92,60 +97,199 @@ class VideoAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return (
-            super().get_queryset(request).prefetch_related("content_object", "sprites")
+            super().get_queryset(request).prefetch_related("sprites")
         )
 
     @admin.display(description=_("Content Name"))
     def get_target_name(self, obj):
-        return str(obj.content_object) if obj.content_object else "-"
+        if obj.movie:
+            return f"Filme: {obj.movie}"
+        elif obj.episode:
+            return f"Episódio: {obj.episode}"
+        return "-"
 
     @admin.display(description=_("Type"))
     def get_target_type(self, obj):
-        return obj.content_type.model.title() if obj.content_type else "-"
+        return obj.title_movie if obj else "-"
 
-    @admin.display(description=_("Duration"), ordering="duration")
+    @admin.display(description=_("Duration"), ordering="duration_all")
     def get_duration_fmt(self, obj):
-        if not obj.duration:
+        if not obj.duration_all:
             return "0s"
-        m, s = divmod(obj.duration, 60)
+
+        total_seconds = int(obj.duration_all.total_seconds())
+
+        m, s = divmod(total_seconds, 60)
         h, m = divmod(m, 60)
+        
         minutes_with_seconds = f"{m:02d}:{s:02d}"
+        
         if h == 0:
             return minutes_with_seconds
-        two_decimal = 10
-        hour = f"{h:02d}" if h > two_decimal else f"{h:01d}"
-        return f"{hour}:{minutes_with_seconds}"
+            
+        return f"{h:02d}:{minutes_with_seconds}"
 
     @admin.display(description=_("Parent Link"))
     def link_to_parent(self, obj):
-        if obj.content_object:
-            ct = obj.content_type
-            url = reverse(
-                f"admin:{ct.app_label}_{ct.model}_change",
-                args=[obj.object_id],
-            )
-            return format_html(
+        target = getattr(obj, 'movie', None)
+
+        if not target:
+            return _("Orphaned Video")
+
+        app_label = target._meta.app_label
+        model_name = target._meta.model_name
+        
+        url = reverse(
+                f"admin:{app_label}_{model_name}_change",
+                args=[target.id],
+        )
+        return format_html(
                 '<a href="{}" class="button" style="padding:3px 8px;">{}</a>',
                 url,
                 _("View Parent"),
-            )
-        return "-"
+        )
 
     @admin.display(description=_("Parent Object"))
     def link_to_parent_large(self, obj):
-        if obj.content_object:
-            ct = obj.content_type
-            url = reverse(
-                f"admin:{ct.app_label}_{ct.model}_change",
-                args=[obj.object_id],
-            )
-            return format_html(
-                '<a href="{}">{} ({})</a>',
-                url,
-                obj.content_object,
-                _("Click to edit"),
-            )
-        return _("Orphaned Video")
+        target = getattr(obj, 'movie', None)
+
+        if not target:
+            return _("Orphaned Video")
+        
+        app_label = target._meta.app_label
+        model = target._meta.model_name
+        url = reverse(
+            f"admin:{app_label}_{model}_change",
+            args=[target.id],
+        )
+        return format_html(
+            '<a href="{}">{} ({})</a>',
+            url,
+            obj,
+            _("Click to edit"),
+        )
+
+    @admin.action(description=_("Generate Sprite Sheets"))
+    def generate_sprites(self, request, queryset):
+        for video in queryset:
+            generate_video_sprites_task.delay(video.id)
+        self.message_user(
+            request,
+            _("%s videos queued for sprite generation.") % queryset.count(),
+        )
+
+
+@admin.register(Series)
+class SerieAdmin(admin.ModelAdmin):
+    inlines = [VideoSpriteInline]
+    list_display = (
+        "title_serie",
+        "status_series",
+        "description",
+    )
+    list_filter = ("status_series", "gener_serie","title_serie")
+    search_fields = ("id", "title_serie")
+    readonly_fields = ("id",)
+
+    actions = ["generate_sprites"]
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("id", "title_serie", "status_series"),
+            },
+        ),
+        (
+            "Files & Streaming",
+            {
+                "fields": ("file_episode", "hls_file"),
+                "description": "Caminhos para o arquivo original e playlist HLS.",
+            },
+        ),
+    )
+
+
+    @admin.action(description=_("Generate Sprite Sheets"))
+    def generate_sprites(self, request, queryset):
+        for video in queryset:
+            generate_video_sprites_task.delay(video.id, "episode")
+
+        self.message_user(
+            request,
+            _("%s vídeos enviados para geração de sprites.") % queryset.count(),
+        )
+
+
+    def get_queryset(self, request):
+        return (
+            super().get_queryset(request).prefetch_related("sprites")
+        )
+
+
+    @admin.display(description=_("Content Name"))
+    def get_target_name(self, obj):
+        if obj.episode:
+            return f"Ep: {obj.episode.title_episode} ({obj.episode.series.title_serie})"
+        
+        if obj.serie:
+            return f"Série: {obj.serie.title_serie}"
+        
+        return "-"
+
+
+    @admin.display(description=_("Type"))
+    def get_target_type(self, obj):
+        if obj.serie:
+            return "Série"
+        if obj.episode:
+            return "Episódio"
+        return "Desconhecido"
+
+
+    @admin.display(description=_("Parent Link"))
+    def link_to_parent(self, obj):
+        target = getattr(obj, 'serie', None) or getattr(obj, 'episode', None)
+
+        if not target:
+            return _("Orphaned Video")
+
+        app_label = target._meta.app_label
+        model_name = target._meta.model_name
+        
+        url = reverse(
+            f"admin:{app_label}_{model_name}_change",
+            args=[target.id],
+        )
+        return format_html(
+            '<a href="{}" class="button" style="padding:3px 8px;">{}</a>',
+            url,
+            _("View Parent"),
+        )
+     
+
+    @admin.display(description=_("Parent Object"))
+    def link_to_parent_large(self, obj):
+        target = obj.serie or obj.episode
+
+        if not target:
+            return _("Orphaned Video")
+
+        app_label = target._meta.app_label
+        model_name = target._meta.model_name
+        
+        url = reverse(
+            f"admin:{app_label}_{model_name}_change",
+            args=[target.id],
+        )
+        
+        return format_html(
+            '<a href="{}">{} ({})</a>',
+            url,
+            str(target),
+            _("Click to edit"),
+        )
+
 
     @admin.action(description=_("Generate Sprite Sheets"))
     def generate_sprites(self, request, queryset):

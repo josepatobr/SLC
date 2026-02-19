@@ -1,14 +1,9 @@
-from filmes.services.sprites import (
-    get_video_duration,
-    generate_video_sprites,
-    _upload_hls_files,
-)
+from filmes.services.sprites import get_video_duration, generate_video_sprites
+from filmes.services.process import process_video_to_hls
 from celery.exceptions import SoftTimeLimitExceeded
 import logging, shutil, tempfile, os, math
 from celery import shared_task
 from datetime import timedelta
-import subprocess
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +16,26 @@ def calculate_video_duration(self, object_id, model_type):
 
     try:
         if model_type == "movie":
-            obj = Movies.objects.get(id=object_id)
-            file_field = obj.file_movie
+            movie_details = Movies.objects.get(id=object_id)
+            file_field = movie_details.file_movie
         else:
-            obj = Episode.objects.get(id=object_id)
-            file_field = obj.file_episode
+            serie_details = Episode.objects.get(id=object_id)
+            file_field = serie_details.file_episode
 
         if not file_field or not file_field.path:
             return
 
         duration = get_video_duration(file_field.path)
 
-        if duration > 0:
-            obj.duration_all = timedelta(seconds=duration)
-            obj.save(update_fields=["duration_all"])
-            logger.info(f"Duração de {model_type} {object_id} atualizada.")
+        if movie_details.duration > 0:
+            movie_details.duration_all = timedelta(seconds=duration)
+            movie_details.save(update_fields=["duration_all"])
+            logger.info(f"Duração de {model_type}: {object_id} atualizada.")
+        else: 
+            serie_details.duration > 0
+            serie_details.duration_all = timedelta(seconds=duration)
+            serie_details.save(update_fields=["duration_all"])
+            logger.info(f"Duração de {model_type}: {object_id} atualizada.")
 
     except (Movies.DoesNotExist, Episode.DoesNotExist):
         logger.error(f"{model_type} com ID {object_id} não encontrado.")
@@ -51,57 +51,23 @@ def process_video_hls_task(self, object_id, model_type):
 
     try:
         if model_type == "movie":
-            obj = Movies.objects.get(id=object_id)
-            input_path = obj.file_movie.path
+            movie_details = Movies.objects.get(id=object_id)
         else:
-            obj = Episode.objects.get(id=object_id)
-            input_path = obj.file_episode.path
+            serie_details = Episode.objects.get(id=object_id)
     except (Movies.DoesNotExist, Episode.DoesNotExist):
-        return
+        return logger.error("Arquivos não existe")
 
     temp_dir = tempfile.mkdtemp()
 
     try:
-        hls_playlist_name = "playlist.m3u8"
-        output_hls_path = os.path.join(temp_dir, hls_playlist_name)
+        process_video_to_hls(Movies, Episode, temp_dir)
 
-        command = [
-            "ffmpeg",
-            "-i",
-            input_path,
-            "-profile:v",
-            "baseline",
-            "-level",
-            "3.0",
-            "-s",
-            "1280x720",
-            "-start_number",
-            "0",
-            "-hls_time",
-            "10",
-            "-hls_list_size",
-            "0",
-            "-f",
-            "hls",
-            output_hls_path,
-        ]
-
-        subprocess.run(command, check=True)
-
-        cloud_hls_path = _upload_hls_files(obj, temp_dir)
-
-        if cloud_hls_path:
-            obj.hls_file = cloud_hls_path
-            obj.save(update_fields=["hls_file"])
-            logger.info(f"HLS enviado para a nuvem com sucesso: {cloud_hls_path}")
-        else:
-            logger.error("Falha ao fazer upload dos arquivos HLS para a nuvem.")
-
+    except SoftTimeLimitExceeded as e:
+        logger.exception("SoftTimeLimitExceeded for video %s", movie_details.id, serie_details.id, exc_info=e)
+        shutil.rmtree(temp_dir, ignore_errors=True)
     except Exception as e:
-        logger.exception("Erro crítico no processamento HLS do objeto %s", object_id)
-    finally:
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+        logger.exception("Unexpected error processing video %s", movie_details.id, serie_details.id, exc_info=e)
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 @shared_task(
@@ -109,16 +75,18 @@ def process_video_hls_task(self, object_id, model_type):
 )
 def generate_video_sprites_task(self, object_id, model_type):
     from .models import Movies, Episode, VideoSprite
+    
+    instance = None
 
     try:
         if model_type == "movie":
-            obj = Movies.objects.get(id=object_id)
-            input_path = obj.file_movie.path
-            field_name = obj.file_movie.name
+            instance = Movies.objects.get(id=object_id)
+            input_path = instance.file_movie.path
+            field_name = instance.file_movie.name
         else:
-            obj = Episode.objects.get(id=object_id)
-            input_path = obj.file_episode.path
-            field_name = obj.file_episode.name
+            instance = Episode.objects.get(id=object_id)
+            input_path = instance.file_episode.path
+            field_name = instance.file_episode.name
     except (Movies.DoesNotExist, Episode.DoesNotExist):
         return
 
@@ -130,7 +98,7 @@ def generate_video_sprites_task(self, object_id, model_type):
         if duration <= 0:
             return
 
-        generate_video_sprites(obj, input_path, temp_dir)
+        generate_video_sprites(instance, input_path, temp_dir)
 
         final_dir = os.path.join(os.path.dirname(input_path), "sprites")
         os.makedirs(final_dir, exist_ok=True)
@@ -149,8 +117,8 @@ def generate_video_sprites_task(self, object_id, model_type):
             ).replace("\\", "/")
 
             VideoSprite.objects.update_or_create(
-                movie=obj if model_type == "movie" else None,
-                episode=obj if model_type == "episode" else None,
+                movie=instance if model_type == "movie" else None,
+                episode=instance if model_type == "episode" else None,
                 defaults={
                     "start_time": 0,
                     "end_time": duration,
@@ -161,9 +129,8 @@ def generate_video_sprites_task(self, object_id, model_type):
                     "image": relative_image_path,
                 },
             )
-
-            obj.sprite_vtt = relative_vtt_path
-            obj.save(update_fields=["sprite_vtt"])
+            instance.sprite_vtt = relative_vtt_path
+            instance.save(update_fields=["sprite_vtt"])
     except SoftTimeLimitExceeded:
         logger.exception(f"Tempo esgotado para gerar sprites de {object_id}")
     except Exception:
@@ -171,3 +138,5 @@ def generate_video_sprites_task(self, object_id, model_type):
     finally:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir, ignore_errors=True)
+
+

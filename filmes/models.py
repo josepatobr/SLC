@@ -1,29 +1,12 @@
-from django.utils.translation import gettext_lazy as _
-from django.db import models
-from uuid import uuid4
-from datetime import timedelta
-from django.db import transaction
 from .tasks import process_video_hls_task, calculate_video_duration
+from django.utils.translation import gettext_lazy as _
+from .utils import get_source_file_path
 from users.models import CustomUser
+from django.db import transaction
+from datetime import timedelta
+from django.db import models
 
 
-def get_source_file_path(instance, filename, folder=None):
-    model_name = instance._meta.model_name
-    path = f"{folder}/{filename}" if folder else filename
-
-    if model_name == "movies":
-        return f"titles_{instance.id}/{path}"
-
-    if model_name == "episode":
-        try:
-            title_id = instance.series.id
-            s_num = instance.season_number
-            e_num = instance.episode_number
-            return f"titles_{title_id}/season_{s_num}/ep_{e_num}/{path}"
-        except AttributeError:
-            pass
-
-    return f"uploads/misc/{uuid4()}/{filename}"
 
 
 class Status(models.TextChoices):
@@ -39,7 +22,7 @@ class Genero(models.TextChoices):
 
 
 class Movies(models.Model):
-    title = models.CharField(max_length=200, blank=False, null=False)
+    title_movie = models.CharField(max_length=200, blank=False, null=False)
     description = models.TextField(blank=False, null=False)
 
     status_movie = models.CharField(choices=Status, blank=False, null=False)
@@ -59,23 +42,7 @@ class Movies(models.Model):
         return 0
 
     def save(self, *args, **kwargs):
-        is_new_video = False
-        if not self.pk:
-            is_new_video = True
-        else:
-            old_instance = Movies.objects.get(pk=self.pk)
-            if old_instance.file_movie != self.file_movie:
-                is_new_video = True
-
         super().save(*args, **kwargs)
-
-        if is_new_video and self.file_movie:
-            transaction.on_commit(
-                lambda: calculate_video_duration.delay(self.id, "movie")
-            )
-            transaction.on_commit(
-                lambda: process_video_hls_task.delay(self.id, "movie")
-            )
 
 
 class MoviesWatched(models.Model):
@@ -168,6 +135,15 @@ class VideoSprite(models.Model):
         null=True,
         blank=True,
     )
+    
+    serie = models.ForeignKey(
+        "Series",
+        on_delete=models.CASCADE,
+        related_name="sprites",
+        null=True,
+        blank=True,
+    )
+    
     episode = models.ForeignKey(
         "Episode",
         on_delete=models.CASCADE,

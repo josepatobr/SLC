@@ -68,10 +68,11 @@ def get_video_duration(video_url: str) -> float:
     return metadata.get("duration", 0) if metadata else 0
 
 
-def process_video_to_hls(obj, input_path, temp_dir):
+def process_video_to_hls(obj, input_path, temp_dir, model_type):
     duration = get_video_duration(input_path)
 
     if duration <= 0:
+        logger.error(f"Duração inválida para o vídeo {obj.id}")
         return None
 
     output_dir = Path(temp_dir) / "hls"
@@ -106,14 +107,18 @@ def process_video_to_hls(obj, input_path, temp_dir):
         logger.exception("Erro no FFmpeg: %s", e.stderr)
         return None
 
-    relative_path = _upload_hls_files(obj, str(output_dir))
-
+    relative_path = _upload_hls_files(obj, str(output_dir), model_type)
     return relative_path
 
 
 def _upload_hls_files(obj, output_dir, model_type):
+    if not obj.id:
+        raise ValueError("O objeto precisa ser salvo no banco antes do upload HLS.")
+    
+
     if not os.path.exists(output_dir):
         return None
+
 
     s3_client = boto3.client(
         "s3",

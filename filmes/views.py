@@ -4,7 +4,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
-from .models import Movies
 import os
 
 
@@ -29,6 +28,8 @@ def upload_chunks(request):
 
 @login_required
 def movie(request, id):
+    from .models import Movies
+
     user = request.user
     if user.user_status == "user_comum":
         messages.error(request, "Você precisa ser vip para acessar essa area.")
